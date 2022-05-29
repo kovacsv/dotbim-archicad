@@ -13,17 +13,23 @@
 #include "DotbimExporter.hpp"
 #include "PropertyHandler.hpp"
 
-static const GSResID AddOnInfoID			= ID_ADDON_INFO;
-	static const Int32 AddOnNameID			= 1;
-	static const Int32 AddOnDescriptionID	= 2;
+static const GSResID AddOnInfoID				= ID_ADDON_INFO;
+	static const Int32 AddOnNameID				= 1;
+	static const Int32 AddOnDescriptionID		= 2;
 
-static const GSResID AddOnMenuID			= ID_ADDON_MENU;
-	static const Int32 AddOnCommandID		= 1;
+static const GSResID AddOnMenuID				= ID_ADDON_MENU;
+	static const Int32 AddOnCommandID			= 1;
 
-static const GSResID AddOnStrsID			= ID_ADDON_STRS;
-	static const Int32 FormatNameID			= 1;
+static const GSResID AddOnStrsID				= ID_ADDON_STRS;
+	static const Int32 FormatNameID				= 1;
 
-static const GSType FileTypeId				= 1;
+static const GSResID AddOnWarning3DStrsID		= ID_ADDON_WARN3D_STRS;
+	static const Int32 Warning3DLargeTextID		= 1;
+	static const Int32 Warning3DSmallTextID		= 2;
+	static const Int32 Warning3DOpen3DTextID	= 3;
+	static const Int32 Warning3DCancelTextID	= 4;
+
+static const GSType FileTypeId					= 1;
 
 static GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Location& location)
 {
@@ -57,9 +63,29 @@ static GSErrCode ExportDotbimFromSaveAs (const API_IOParams* ioParams, Modeler::
 
 static GSErrCode ExportDotbimFromMenu ()
 {
-	API_WindowInfo newWindowInfo = {};
-	newWindowInfo.typeID = APIWind_3DModelID;
-	ACAPI_Automate (APIDo_ChangeWindowID, &newWindowInfo);
+	API_WindowInfo windowInfo;
+	BNZeroMemory (&windowInfo, sizeof (API_WindowInfo));
+	if (ACAPI_Database (APIDb_GetCurrentWindowID, &windowInfo, nullptr) != NoError) {
+		return Error;
+	}
+
+	if (windowInfo.typeID != APIWind_3DModelID) {
+		DG::AlertResponse response = DG::WarningAlert (
+			RSGetIndString (AddOnWarning3DStrsID, Warning3DLargeTextID, ACAPI_GetOwnResModule ()),
+			RSGetIndString (AddOnWarning3DStrsID, Warning3DSmallTextID, ACAPI_GetOwnResModule ()),
+			RSGetIndString (AddOnWarning3DStrsID, Warning3DOpen3DTextID, ACAPI_GetOwnResModule ()),
+			RSGetIndString (AddOnWarning3DStrsID, Warning3DCancelTextID, ACAPI_GetOwnResModule ())
+		);
+		if (response == DG::AlertResponse::Cancel) {
+			return NoError;
+		}
+
+		API_WindowInfo newWindowInfo = {};
+		newWindowInfo.typeID = APIWind_3DModelID;
+		if (ACAPI_Automate (APIDo_ChangeWindowID, &newWindowInfo) != NoError) {
+			return Error;
+		}
+	}
 
 	AttributeReader attributeReader;
 	ModelerAPI::Model model;
@@ -86,7 +112,7 @@ static GSErrCode ExportDotbimFromMenu ()
 	saveFileDialog.SelectFile (fileLoc);
 
 	if (!saveFileDialog.Invoke ()) {
-		return Error;
+		return NoError;
 	}
 
 	const IO::Location& location = saveFileDialog.GetSelectedFile ();
