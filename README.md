@@ -1,5 +1,7 @@
 # Archicad Dotbim Exporter
 
+[![Build](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml/badge.svg)](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml)
+
 Archicad Add-On to export the 3D model to [Dotbim (.bim)](https://dotbim.net) format.
 
 ## How to use?
