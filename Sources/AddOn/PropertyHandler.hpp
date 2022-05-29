@@ -1,3 +1,5 @@
+#pragma once
+
 #include "GSGuid.hpp"
 
 #include <string>

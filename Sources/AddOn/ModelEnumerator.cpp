@@ -114,6 +114,9 @@ void ModelEnumerator::BuildHierarchy ()
 					elemHierarchy[rootGuid].Push (elemGuid);
 				}
 				break;
+			case API_UnknownElemType:
+			default:
+				break;
 		}
 
 		guidToElement.Add (element.GetElemGuid (), element);
@@ -129,7 +132,7 @@ Int32 ModelEnumerator::EnumerateElement (const ModelerAPI::Element& element, Int
 
 		for (Int32 vertexIndex = 1; vertexIndex <= body.GetVertexCount (); ++vertexIndex) {
 			ModelerAPI::Vertex vertex;
-			body.GetVertex (vertexIndex, &vertex);
+			body.GetVertex (vertexIndex, &vertex, ModelerAPI::CoordinateSystem::World);
 			enumerator.OnVertex (vertex);
 		}
 
