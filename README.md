@@ -39,14 +39,14 @@ The build environment is set up for Windows development, but the code should com
 
 You should install some prerequisites to build the Add-On:
 - [Visual Studio](https://visualstudio.microsoft.com/downloads):
-  - Archicad 24: Visual Studio 2017.
-  - Archicad 25: Visual Studio 2019.
-- [Archicad API Development Kit](https://archicadapi.graphisoft.com/) for the target version.
-- [CMake](https://cmake.org) for generating the project file (3.16+).
-- [Python](https://www.python.org) for resource compilation (2.7+ or 3.8+).
+  - Archicad 24: Visual Studio 2017
+  - Archicad 25: Visual Studio 2019
+- [Archicad API Development Kit](https://archicadapi.graphisoft.com/) for the target version
+- [CMake](https://cmake.org) for generating the project file (3.16+)
+- [Python](https://www.python.org) for resource compilation (2.7+ or 3.8+)
 
 ### Generate the project and build
 
 See the `Tools` folder for some preconfigured build scripts for each version. Running one of these scripts also generates the Visual Studio project, so after the first run you can continue to work in Visual Studio.
-- Archicad 24: `Tools/build_ac24.bat`.
-- Archicad 25: `Tools/build_ac25.bat`.
+- Archicad 24: `Tools/build_ac24.bat`
+- Archicad 25: `Tools/build_ac25.bat`

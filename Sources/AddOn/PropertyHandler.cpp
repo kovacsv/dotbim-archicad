@@ -3,12 +3,11 @@
 
 #include "ACAPinc.h"
 
-static const GSResID AddOnPropStrsID		= ID_ADDON_PROP_STRS;
-	static const Int32 ElementInfoID		= 1;
-	static const Int32 RenovationStatusID	= 2;
-	static const Int32 ProjectNameID		= 3;
-	static const Int32 GeneratedByID		= 4;
-	static const Int32 UntitledID			= 5;
+static const GSResID AddOnPropStrsID	= ID_ADDON_PROP_STRS;
+	static const Int32 ElementInfoID	= 1;
+	static const Int32 ProjectNameID	= 2;
+	static const Int32 GeneratedByID	= 3;
+	static const Int32 UntitledID		= 4;
 
 static void ProcessProperty (const GS::UniString& name, const GS::UniString& val, const PropertyProcessor& processor)
 {
@@ -46,6 +45,7 @@ void EnumerateElemProperties (const GS::Guid& elemGuid, const PropertyProcessor&
 	GSErrCode err = NoError;
 	API_Guid apiElemGuid = GSGuid2APIGuid (elemGuid);
 
+	// ID
 	API_ElementMemo	elementMemo;
 	err = ACAPI_Element_GetMemo (apiElemGuid, &elementMemo, APIMemoMask_ElemInfoString);
 	if (err == NoError && elementMemo.elemInfoString != nullptr) {
@@ -54,20 +54,22 @@ void EnumerateElemProperties (const GS::Guid& elemGuid, const PropertyProcessor&
 		ACAPI_DisposeElemMemoHdls (&elementMemo);
 	}
 
-	API_Element element;
-	BNZeroMemory (&element, sizeof (API_Element));
-	element.header.guid = apiElemGuid;
-	err = ACAPI_Element_Get (&element);
+	// Categories
+	GS::Array<API_ElemCategory> categoryList;
+	err = ACAPI_Database (APIDb_GetElementCategoriesID, &categoryList);
 	if (err == NoError) {
-		GS::UniString renovationStatusName;
-		err = ACAPI_Goodies (APIAny_GetRenovationStatusNameID, (void*) (GS::IntPtr) element.header.renovationStatus, &renovationStatusName);
-		if (err == NoError) {
-			GS::UniString renovationStatusStr = RSGetIndString (AddOnPropStrsID, RenovationStatusID, ACAPI_GetOwnResModule ());
-			ProcessProperty (renovationStatusStr, renovationStatusName, processor);
+		for (const API_ElemCategory& category : categoryList) {
+			API_ElemCategoryValue categoryValue;
+			err = ACAPI_Element_GetCategoryValue (apiElemGuid, category, &categoryValue);
+			if (err != NoError) {
+				continue;
+			}
+			ProcessProperty (category.name, categoryValue.name, processor);
 		}
 	}
 
 #if defined (ServerMainVers_2500)
+	// User-Defined Properties
 	GS::Array<API_PropertyDefinition> definitions;
 	err = ACAPI_Element_GetPropertyDefinitions (apiElemGuid, API_PropertyDefinitionFilter_UserDefined, definitions);
 	if (err == NoError) {
