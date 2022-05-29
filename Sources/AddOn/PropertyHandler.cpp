@@ -17,23 +17,25 @@ static void ProcessProperty (const GS::UniString& name, const GS::UniString& val
 	processor (propertyName, propertyVal);
 }
 
-void EnumerateProjectProperties (const PropertyProcessor& processor)
+GS::UniString GetProjectName ()
 {
-	GSErrCode err = NoError;
+	GS::UniString projectName = RSGetIndString (AddOnPropStrsID, UntitledID, ACAPI_GetOwnResModule ());
 
 	API_ProjectInfo projectInfo = {};
 	BNZeroMemory (&projectInfo, sizeof (API_ProjectInfo));
-	err = ACAPI_Environment (APIEnv_ProjectID, &projectInfo);
-	if (err == NoError) {
-		GS::UniString projectName;
-		if (projectInfo.untitled || projectInfo.projectName == nullptr) {
-			projectName = RSGetIndString (AddOnPropStrsID, UntitledID, ACAPI_GetOwnResModule ());
-		} else {
-			projectName = *projectInfo.projectName;
-		}
-		GS::UniString projectNameStr = RSGetIndString (AddOnPropStrsID, ProjectNameID, ACAPI_GetOwnResModule ());
-		ProcessProperty (projectNameStr, projectName, processor);
+
+	GSErrCode err = ACAPI_Environment (APIEnv_ProjectID, &projectInfo);
+	if (err != NoError || projectInfo.untitled || projectInfo.projectName == nullptr) {
+		return projectName;
 	}
+
+	return *projectInfo.projectName;
+}
+
+void EnumerateProjectProperties (const PropertyProcessor& processor)
+{
+	GS::UniString projectNameStr = RSGetIndString (AddOnPropStrsID, ProjectNameID, ACAPI_GetOwnResModule ());
+	ProcessProperty (projectNameStr, GetProjectName (), processor);
 
 	GS::UniString generatedByStr = RSGetIndString (AddOnPropStrsID, GeneratedByID, ACAPI_GetOwnResModule ());
 	ProcessProperty (generatedByStr, "https://github.com/kovacsv/dotbim-archicad", processor);

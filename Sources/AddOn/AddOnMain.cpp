@@ -11,6 +11,7 @@
 #include "exp.h"
 
 #include "DotbimExporter.hpp"
+#include "PropertyHandler.hpp"
 
 static const GSResID AddOnInfoID			= ID_ADDON_INFO;
 	static const Int32 AddOnNameID			= 1;
@@ -79,6 +80,10 @@ static GSErrCode ExportDotbimFromMenu ()
 	FTM::FileType fileType (nullptr, "bim", 0, 0, 0);
 	FTM::TypeID fileTypeId = FTM::FileTypeManager::SearchForType (fileType);
 	saveFileDialog.AddFilter (fileTypeId);
+
+	IO::Location fileLoc = saveFileDialog.GetSelectedFolder ();
+	fileLoc.AppendToLocal (IO::Name (GetProjectName ()));
+	saveFileDialog.SelectFile (fileLoc);
 
 	if (!saveFileDialog.Invoke ()) {
 		return Error;
