@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build_ac24:
+    runs-on: [windows-2016]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        path: dotbim-archicad
+    - name: Checkout devkits
+      uses: actions/checkout@v3
+      with:
+        repository: kovacsv/ArchicadDevKits
+        token: ${{ secrets.PAT }}
+        path: ArchicadDevKits
+    - name: Unzip devkit
+      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 24.3009.zip" -o"dotbim-archicad/Build/AC24"
+    - name: Build
+      run: dotbim-archicad/Tools/build.bat "Visual Studio 15 2017" "Build/AC24/API Development Kit 24.3009" "AC24"
+
+  build_ac25:
+    runs-on: [windows-2019]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        path: dotbim-archicad
+    - name: Checkout devkits
+      uses: actions/checkout@v3
+      with:
+        repository: kovacsv/ArchicadDevKits
+        token: ${{ secrets.PAT }}
+        path: ArchicadDevKits
+    - name: Unzip devkit
+      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 25.3002.zip" -o"dotbim-archicad/Build/AC25"
+    - name: Build
+      run: dotbim-archicad/Tools/build.bat "Visual Studio 16 2019" "Build/AC25/API Development Kit 25.3002" "AC25"
