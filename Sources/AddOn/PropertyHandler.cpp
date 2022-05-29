@@ -7,7 +7,8 @@ static const GSResID AddOnPropStrsID		= ID_ADDON_PROP_STRS;
 	static const Int32 ElementInfoID		= 1;
 	static const Int32 RenovationStatusID	= 2;
 	static const Int32 ProjectNameID		= 3;
-	static const Int32 UntitledID			= 4;
+	static const Int32 GeneratedByID		= 4;
+	static const Int32 UntitledID			= 5;
 
 static void ProcessProperty (const GS::UniString& name, const GS::UniString& val, const PropertyProcessor& processor)
 {
@@ -30,9 +31,12 @@ void EnumerateProjectProperties (const PropertyProcessor& processor)
 		} else {
 			projectName = *projectInfo.projectName;
 		}
-		ProcessProperty (RSGetIndString (AddOnPropStrsID, ProjectNameID, ACAPI_GetOwnResModule ()), projectName, processor);
+		GS::UniString projectNameStr = RSGetIndString (AddOnPropStrsID, ProjectNameID, ACAPI_GetOwnResModule ());
+		ProcessProperty (projectNameStr, projectName, processor);
 	}
 
+	GS::UniString generatedByStr = RSGetIndString (AddOnPropStrsID, GeneratedByID, ACAPI_GetOwnResModule ());
+	ProcessProperty (generatedByStr, "https://github.com/kovacsv/dotbim-archicad", processor);
 }
 
 void EnumerateElemProperties (const GS::Guid& elemGuid, const PropertyProcessor& processor)
