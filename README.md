@@ -20,7 +20,10 @@ You can open Add-On Manager with the `Options > Add-On Manager` command. Open th
 
 #### Second option: Copy to the Add-Ons folder
 
-Copy the downloaded apx file to the Add-Ons folder of your Archicad installation. Make sure to restart Archicad after the copy. On Windows the Add-Ons folder location is something like this: `C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons`.
+Copy the downloaded apx file to the Add-Ons folder of your Archicad installation. Make sure to restart Archicad after the copy. On Windows the Add-Ons folder location is something like this:
+```
+C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons`
+```
 
 ### Use
 
