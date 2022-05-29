@@ -1,0 +1,21 @@
+#include "ResourceIds.hpp"
+
+'STR#' ID_ADDON_INFO "Add-on Name and Description" {
+/* [  1] */		"Dotbim Exporter"
+/* [  2] */		"Add-On to export the 3D model to Dotbim (.bim) format.\n\nVersion 0.0.1"
+}
+
+'STR#' ID_ADDON_MENU "Strings for the Menu" {
+/* [  1] */		"Export Dotbim File... ^E3 ^ES ^EE ^EI ^ED ^ET ^10001"
+}
+
+'STR#' ID_ADDON_STRS "Add-on Strings" {
+/* [  1] */		"Dotbim File"
+}
+
+'STR#' ID_ADDON_PROP_STRS "Add-on Property Strings" {
+/* [  1] */		"ID"
+/* [  2] */		"Renovation Status"
+/* [  3] */		"Project Name"
+/* [  4] */		"Untitled"
+}
