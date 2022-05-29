@@ -123,7 +123,7 @@ static void ExportElement (
 	rapidjson::Value faceColorsArray (rapidjson::kArrayType);
 
 	JsonBuilderEnumerator jsonBuilder (document);
-	enumerator.EnumerateElement (elementIndex, jsonBuilder);
+	enumerator.EnumerateElementGeometry (elementIndex, jsonBuilder);
 	if (jsonBuilder.indicesArray.Empty ()) {
 		return;
 	}

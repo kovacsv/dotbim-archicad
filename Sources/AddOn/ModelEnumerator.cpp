@@ -60,7 +60,7 @@ const GS::Guid& ModelEnumerator::GetElementGuid (UIndex index) const
 	return topLevelElements[index];
 }
 
-void ModelEnumerator::EnumerateElement (UIndex index, TriangleEnumerator& enumerator) const
+void ModelEnumerator::EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const
 {
 	const GS::Guid& elementGuid = topLevelElements[index];
 	if (!guidToElement.ContainsKey (elementGuid)) {

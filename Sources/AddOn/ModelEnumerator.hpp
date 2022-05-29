@@ -35,7 +35,7 @@ public:
 
 	USize				GetElementCount () const;
 	const GS::Guid&		GetElementGuid (UIndex index) const;
-	void				EnumerateElement (UIndex index, TriangleEnumerator& enumerator) const;
+	void				EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const;
 
 private:
 	void	BuildHierarchy ();
