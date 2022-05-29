@@ -24,7 +24,7 @@ Copy the downloaded apx file to the Add-Ons folder of your Archicad installation
 
 ### Use
 
-The export functinality is available from two places:
+The export functionality is available at two places:
 - `File > Save As...`
 - `File > Interoperability > Export Dotbim File...`
 
