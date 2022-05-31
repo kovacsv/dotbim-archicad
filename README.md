@@ -14,7 +14,7 @@ You can download the latest version here:
 
 You have two options to install the Add-On
 
-#### First option: Load the Add-On Manager
+#### First option: Load in Add-On Manager
 
 You can open Add-On Manager with the `Options > Add-On Manager` command. Open the "Edit List of Available Add-Ons" panel, click on the "Add..." button, and select the downloaded apx file.
 
