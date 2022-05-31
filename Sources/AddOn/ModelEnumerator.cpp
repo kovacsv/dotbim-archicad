@@ -1,6 +1,7 @@
 #include "ModelEnumerator.hpp"
 
 #include "ACAPinc.h"
+#include "Algorithms.hpp"
 
 #include "ModelMeshBody.hpp"
 #include "Polygon.hpp"
@@ -57,12 +58,12 @@ USize ModelEnumerator::GetElementCount () const
 
 const GS::Guid& ModelEnumerator::GetElementGuid (UIndex index) const
 {
-	return topLevelElements[index];
+	return topLevelElements[index].first;
 }
 
 void ModelEnumerator::EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const
 {
-	const GS::Guid& elementGuid = topLevelElements[index];
+	const GS::Guid& elementGuid = GetElementGuid (index);
 	if (!guidToElement.ContainsKey (elementGuid)) {
 		return;
 	}
@@ -102,7 +103,7 @@ void ModelEnumerator::BuildHierarchy ()
 			case API_SingleElem:
 			case API_MainElemInMultipleElem:
 				{
-					topLevelElements.Push (elemGuid);
+					topLevelElements.Push (GuidAndType (elemGuid, element.GetType ()));
 				}
 				break;
 			case API_ChildElemInMultipleElem:
@@ -121,6 +122,10 @@ void ModelEnumerator::BuildHierarchy ()
 
 		guidToElement.Add (element.GetElemGuid (), element);
 	}
+
+	GS::Sort (topLevelElements.Begin (), topLevelElements.End (), [&] (const GuidAndType& e1, const GuidAndType& e2) {
+		return e1.second < e2.second;
+	});
 }
 
 Int32 ModelEnumerator::EnumerateElement (const ModelerAPI::Element& element, Int32 vertexOffset, TriangleEnumerator& enumerator) const

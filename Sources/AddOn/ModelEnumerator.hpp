@@ -4,6 +4,8 @@
 #include "Model.hpp"
 #include "ModelElement.hpp"
 
+using GuidAndType = GS::Pair<GS::Guid, ModelerAPI::Element::Type>;
+
 class Color
 {
 public:
@@ -42,7 +44,7 @@ private:
 	Int32	EnumerateElement (const ModelerAPI::Element& element, Int32 vertexOffset, TriangleEnumerator& enumerator) const;
 
 	const ModelerAPI::Model&						model;
-	GS::Array<GS::Guid>								topLevelElements;
+	GS::Array<GuidAndType>							topLevelElements;
 	GS::HashTable<GS::Guid, ModelerAPI::Element>	guidToElement;
 	GS::HashTable<GS::Guid, GS::Array<GS::Guid>>	elemHierarchy;
 };
