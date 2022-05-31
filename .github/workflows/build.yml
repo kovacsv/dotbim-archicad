@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build_ac24_win:
+  build_ac24:
     runs-on: [windows-2016]
     steps:
     - name: Checkout repo
@@ -24,9 +24,9 @@ jobs:
     - name: Unzip devkit
       run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 24.3009.zip" -o"dotbim-archicad/Build/AC24"
     - name: Build
-      run: python dotbim-archicad/Tools/build.py --acVersion "24" --devKitDir "Build/AC24/API Development Kit 24.3009"
+      run: python dotbim-archicad/Tools/build.py --acVersion "24" --devKitDir "Build/AC24/API Development Kit 24.3009" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
 
-  build_ac25_win:
+  build_ac25:
     runs-on: [windows-2019]
     steps:
     - name: Checkout repo
@@ -42,4 +42,4 @@ jobs:
     - name: Unzip devkit
       run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 25.3002.zip" -o"dotbim-archicad/Build/AC25"
     - name: Build
-      run: python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002"
+      run: python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}

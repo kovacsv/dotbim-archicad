@@ -12,6 +12,8 @@ def PrintError (msg):
 parser = argparse.ArgumentParser ()
 parser.add_argument ('--acVersion', dest = 'acVersion', type = str, required = True, help = 'Version of the target Archicad.')
 parser.add_argument ('--devKitDir', dest = 'devKitDir', type = str, required = True, help = 'Location of the Archicad Development Kit.')
+parser.add_argument ('--developerId', dest = 'developerId', type = str, required = False, help = 'Archicad Developer ID.')
+parser.add_argument ('--localId', dest = 'localId', type = str, required = False, help = 'Add-On Local ID.')
 parser.add_argument ('--projGenerator', dest = 'projGenerator', type = str, required = False, help = 'Custom cmake project generator.')
 args = parser.parse_args ()
 
@@ -51,6 +53,9 @@ cmakeParams.append ('cmake')
 cmakeParams.extend (['-B', buildDir])
 cmakeParams.extend (generatorParams)
 cmakeParams.append ('-DAC_API_DEVKIT_DIR=' + devKitDir)
+if args.developerId != None and args.localId != None:
+    cmakeParams.append ('-DAC_MDID_DEV=' + args.developerId)
+    cmakeParams.append ('-DAC_MDID_LOC=' + args.localId)
 cmakeParams.append (rootPath)
 
 projGenResult = subprocess.call (cmakeParams)
