@@ -23,7 +23,8 @@ jobs:
     - name: Unzip devkit
       run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 24.3009.zip" -o"dotbim-archicad/Build/AC24"
     - name: Build
-      run: dotbim-archicad/Tools/build.bat "Visual Studio 15 2017" "Build/AC24/API Development Kit 24.3009" "AC24"
+      run: python dotbim-archicad/Tools/build.py --acVersion "24" --devKitDir "Build/AC24/API Development Kit 24.3009"
+      run: copy "dotbim-archicad/Build/AC24/Release/DotbimExporter.apx" "dotbim-archicad/Build/AC24/Release/DotbimExporter_AC24.apx"
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "dotbim-archicad/Build/AC24/Release/DotbimExporter_AC24.apx"
@@ -47,7 +48,8 @@ jobs:
     - name: Unzip devkit
       run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 25.3002.zip" -o"dotbim-archicad/Build/AC25"
     - name: Build
-      run: dotbim-archicad/Tools/build.bat "Visual Studio 16 2019" "Build/AC25/API Development Kit 25.3002" "AC25"
+      run: python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002"
+      run: copy "dotbim-archicad/Build/AC25/Release/DotbimExporter.apx" "dotbim-archicad/Build/AC25/Release/DotbimExporter_AC25.apx"
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "dotbim-archicad/Build/AC25/Release/DotbimExporter_AC25.apx"
