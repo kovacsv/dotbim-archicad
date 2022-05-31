@@ -2,7 +2,7 @@
 
 'STR#' ID_ADDON_INFO "Add-on Name and Description" {
 /* [  1] */		"Dotbim Exporter"
-/* [  2] */		"Add-On to export the 3D model to Dotbim (.bim) format.\n\nVersion 0.0.1-beta3"
+/* [  2] */		"Add-On to export the 3D model to Dotbim (.bim) format.\n\nVersion 0.0.1"
 }
 
 'STR#' ID_ADDON_MENU "Strings for the Menu" {
