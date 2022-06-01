@@ -26,7 +26,8 @@ jobs:
       run: |
         python dotbim-archicad/Tools/build.py --acVersion "24" --devKitDir "Build/AC24/API Development Kit 24.3009" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
         copy "dotbim-archicad/Build/AC24/Release/DotbimExporter.apx" "dotbim-archicad/Build/AC24/Release/DotbimExporter_AC24.apx"
-    - uses: ncipollo/release-action@v1
+    - name: Create release
+      uses: ncipollo/release-action@v1
       with:
         artifacts: "dotbim-archicad/Build/AC24/Release/DotbimExporter_AC24.apx"
         draft: true
@@ -52,7 +53,8 @@ jobs:
       run: |
         python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
         copy "dotbim-archicad/Build/AC25/Release/DotbimExporter.apx" "dotbim-archicad/Build/AC25/Release/DotbimExporter_AC25.apx"
-    - uses: ncipollo/release-action@v1
+    - name: Create release
+      uses: ncipollo/release-action@v1
       with:
         artifacts: "dotbim-archicad/Build/AC25/Release/DotbimExporter_AC25.apx"
         draft: true
