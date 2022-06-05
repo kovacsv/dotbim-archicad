@@ -82,6 +82,8 @@ public:
 	double qw;
 };
 
+// Assuming that the transformation doesn't contain scaling
+// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
 static void DecomposeMatrix (const TRANMAT& tranmat, Vector3D& translation, Quaternion& rotation)
 {
 	const Geometry::Matrix34& matrix = tranmat.GetMatrix ();
@@ -101,7 +103,6 @@ static void DecomposeMatrix (const TRANMAT& tranmat, Vector3D& translation, Quat
 	double m21 = matrix.Get (2, 1);
 	double m22 = matrix.Get (2, 2);
 
-	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
 	double tr = m00 + m11 + m22;
 	if (tr > 0.0) {
 		double s = sqrt (tr + 1.0) * 2.0;
