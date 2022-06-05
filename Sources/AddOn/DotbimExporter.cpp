@@ -64,6 +64,80 @@ static rapidjson::Value CreateColorValue (rapidjson::Document& document, const C
 	return colorObj;
 }
 
+class Quaternion
+{
+public:
+	Quaternion (double qx, double qy, double qz, double qw) :
+		qx (qx),
+		qy (qy),
+		qz (qz),
+		qw (qw)
+	{
+
+	}
+
+	double qx;
+	double qy;
+	double qz;
+	double qw;
+};
+
+static void DecomposeMatrix (const TRANMAT& tranmat, Vector3D& translation, Quaternion& rotation)
+{
+	const Geometry::Matrix34& matrix = tranmat.GetMatrix ();
+	translation = Vector3D (
+		matrix.Get (0, 3),
+		matrix.Get (1, 3),
+		matrix.Get (2, 3)
+	);
+
+	double m00 = matrix.Get (0, 0);
+	double m01 = matrix.Get (0, 1);
+	double m02 = matrix.Get (0, 2);
+	double m10 = matrix.Get (1, 0);
+	double m11 = matrix.Get (1, 1);
+	double m12 = matrix.Get (1, 2);
+	double m20 = matrix.Get (2, 0);
+	double m21 = matrix.Get (2, 1);
+	double m22 = matrix.Get (2, 2);
+
+	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+	double tr = m00 + m11 + m22;
+	if (tr > 0.0) {
+		double s = sqrt (tr + 1.0) * 2.0;
+		rotation = Quaternion (
+			(m21 - m12) / s,
+			(m02 - m20) / s,
+			(m10 - m01) / s,
+			0.25 * s
+		);
+	} else if ((m00 > m11) && (m00 > m22)) {
+		double s = sqrt (1.0 + m00 - m11 - m22) * 2.0;
+		rotation = Quaternion (
+			0.25 * s,
+			(m01 + m10) / s,
+			(m02 + m20) / s,
+			(m21 - m12) / s
+		);
+	} else if (m11 > m22) {
+		double s = sqrt (1.0 + m11 - m00 - m22) * 2.0;
+		rotation = Quaternion (
+			(m01 + m10) / s,
+			0.25 * s,
+			(m12 + m21) / s,
+			(m02 - m20) / s
+		);
+	} else {
+		double s = sqrt (1.0 + m22 - m00 - m11) * 2.0;
+		rotation = Quaternion (
+			(m02 + m20) / s,
+			(m12 + m21) / s,
+			0.25 * s,
+			(m10 - m01) / s
+		);
+	}
+}
+
 class JsonBuilderEnumerator : public TriangleEnumerator
 {
 public:
@@ -109,12 +183,15 @@ public:
 	std::unordered_set<Color> usedColors;
 };
 
+using BaseElemIdToMeshIndex = GS::HashTable<ModelerAPI::BaseElemId, rapidjson::SizeType>;
+
 static void ExportElement (
 	const ModelEnumerator& enumerator,
 	UIndex elementIndex,
 	rapidjson::Document& document,
 	rapidjson::Value& meshesArray,
-	rapidjson::Value& elementsArray)
+	rapidjson::Value& elementsArray,
+	BaseElemIdToMeshIndex& baseElemIdToMeshIndex)
 {
 	auto& allocator = document.GetAllocator ();
 
@@ -128,28 +205,51 @@ static void ExportElement (
 		return;
 	}
 
-	rapidjson::Value meshObject (rapidjson::kObjectType);
+	bool needToAddNewMesh = true;
 	rapidjson::SizeType meshId = meshesArray.Size ();
-	meshObject.AddMember ("mesh_id", meshId, allocator);
+	ModelerAPI::BaseElemId baseElemId;
+	if (enumerator.GetElementBaseElementId (elementIndex, baseElemId)) {
+		if (baseElemIdToMeshIndex.ContainsKey (baseElemId)) {
+			needToAddNewMesh = false;
+			meshId = baseElemIdToMeshIndex.Get (baseElemId);
+		} else {
+			baseElemIdToMeshIndex.Add (baseElemId, meshId);
+		}
+	}
 
-	meshObject.AddMember ("coordinates", jsonBuilder.coordinatesArray, allocator);
-	meshObject.AddMember ("indices", jsonBuilder.indicesArray, allocator);
-	meshesArray.PushBack (meshObject, allocator);
+	if (needToAddNewMesh) {
+		rapidjson::Value meshObject (rapidjson::kObjectType);
+		meshObject.AddMember ("mesh_id", meshId, allocator);
+		meshObject.AddMember ("coordinates", jsonBuilder.coordinatesArray, allocator);
+		meshObject.AddMember ("indices", jsonBuilder.indicesArray, allocator);
+		meshesArray.PushBack (meshObject, allocator);
+	}
 
 	rapidjson::Value elementObject (rapidjson::kObjectType);
 	elementObject.AddMember ("mesh_id", meshId, allocator);
 
+	Vector3D translation (0.0, 0.0, 0.0);
+	Quaternion rotation (0.0, 0.0, 0.0, 1.0);
+	ModelerAPI::Transformation transformation;
+	if (enumerator.GetElementTransformation (elementIndex, transformation)) {
+		TRANMAT tranmat;
+		transformation.ToTRANMAT (&tranmat);
+		if (!tranmat.IsIdentity ()) {
+			DecomposeMatrix (tranmat, translation, rotation);
+		}
+	}
+
 	rapidjson::Value vectorObject (rapidjson::kObjectType);
-	vectorObject.AddMember ("x", 0.0, allocator);
-	vectorObject.AddMember ("y", 0.0, allocator);
-	vectorObject.AddMember ("z", 0.0, allocator);
+	vectorObject.AddMember ("x", translation.x, allocator);
+	vectorObject.AddMember ("y", translation.y, allocator);
+	vectorObject.AddMember ("z", translation.z, allocator);
 	elementObject.AddMember ("vector", vectorObject, allocator);
 
 	rapidjson::Value rotationObject (rapidjson::kObjectType);
-	rotationObject.AddMember ("qx", 0.0, allocator);
-	rotationObject.AddMember ("qy", 0.0, allocator);
-	rotationObject.AddMember ("qz", 0.0, allocator);
-	rotationObject.AddMember ("qw", 1.0, allocator);
+	rotationObject.AddMember ("qx", rotation.qx, allocator);
+	rotationObject.AddMember ("qy", rotation.qy, allocator);
+	rotationObject.AddMember ("qz", rotation.qz, allocator);
+	rotationObject.AddMember ("qw", rotation.qw, allocator);
 	elementObject.AddMember ("rotation", rotationObject, allocator);
 
 	if (jsonBuilder.usedColors.size () == 1) {
@@ -194,8 +294,9 @@ std::string ExportDotbim (const ModelerAPI::Model& model)
 	rapidjson::Value meshesArray (rapidjson::kArrayType);
 	rapidjson::Value elementsArray (rapidjson::kArrayType);
 
+	BaseElemIdToMeshIndex baseElemIdToMeshIndex;
 	for (UIndex elementIndex = 0; elementIndex < enumerator.GetElementCount (); ++elementIndex) {
-		ExportElement (enumerator, elementIndex, document, meshesArray, elementsArray);
+		ExportElement (enumerator, elementIndex, document, meshesArray, elementsArray, baseElemIdToMeshIndex);
 	}
 
 	document.AddMember ("meshes", meshesArray, allocator);

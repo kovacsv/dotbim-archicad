@@ -2,6 +2,7 @@
 
 #include "ACAPinc.h"
 #include "Algorithms.hpp"
+#include "GSProcessControl.hpp"
 
 #include "ModelMeshBody.hpp"
 #include "Polygon.hpp"
@@ -61,6 +62,39 @@ const GS::Guid& ModelEnumerator::GetElementGuid (UIndex index) const
 	return topLevelElements[index].first;
 }
 
+bool ModelEnumerator::GetElementBaseElementId (UIndex index, ModelerAPI::BaseElemId& baseElemId) const
+{
+	const GS::Guid& elementGuid = GetElementGuid (index);
+	if (IsHierarchicalMainElement (elementGuid)) {
+		return false;
+	}
+
+	const ModelerAPI::Element& element = guidToElement[elementGuid];
+	GS::NonInterruptibleProcessControl processControl;
+	element.GetBaseElemId (
+		&baseElemId,
+		processControl,
+		ModelerAPI::Element::EdgeColorInBaseElemId::NotIncluded,
+		ModelerAPI::Element::PolygonAndFaceTextureMappingInBaseElemId::NotIncluded,
+		ModelerAPI::Element::BodyTextureMappingInBaseElemId::NotIncluded,
+		ModelerAPI::Element::EliminationInfoInBaseElemId::NotIncluded
+	);
+
+	return true;
+}
+
+bool ModelEnumerator::GetElementTransformation (UIndex index, ModelerAPI::Transformation& transformation) const
+{
+	const GS::Guid& elementGuid = GetElementGuid (index);
+	if (IsHierarchicalMainElement (elementGuid)) {
+		return false;
+	}
+
+	const ModelerAPI::Element& element = guidToElement[elementGuid];
+	transformation = element.GetElemLocalToWorldTransformation ();
+	return true;
+}
+
 void ModelEnumerator::EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const
 {
 	const GS::Guid& elementGuid = GetElementGuid (index);
@@ -70,12 +104,17 @@ void ModelEnumerator::EnumerateElementGeometry (UIndex index, TriangleEnumerator
 
 	Int32 vertexOffset = 0;
 	
+	ModelerAPI::CoordinateSystem coordSystem =
+		IsHierarchicalMainElement (elementGuid) ?
+		ModelerAPI::CoordinateSystem::World :
+		ModelerAPI::CoordinateSystem::ElemLocal;
+
 	const ModelerAPI::Element& element = guidToElement[elementGuid];
-	vertexOffset = EnumerateElement (element, vertexOffset, enumerator);
+	vertexOffset = EnumerateElement (element, coordSystem, vertexOffset, enumerator);
 	if (elemHierarchy.ContainsKey (elementGuid)) {
 		for (const GS::Guid& subElementGuid : elemHierarchy[elementGuid]) {
 			const ModelerAPI::Element& subElement = guidToElement[subElementGuid];
-			vertexOffset = EnumerateElement (subElement, vertexOffset, enumerator);
+			vertexOffset = EnumerateElement (subElement, coordSystem, vertexOffset, enumerator);
 		}
 	}
 }
@@ -128,7 +167,12 @@ void ModelEnumerator::BuildHierarchy ()
 	});
 }
 
-Int32 ModelEnumerator::EnumerateElement (const ModelerAPI::Element& element, Int32 vertexOffset, TriangleEnumerator& enumerator) const
+bool ModelEnumerator::IsHierarchicalMainElement (const GS::Guid& elementGuid) const
+{
+	return elemHierarchy.ContainsKey (elementGuid);
+}
+
+Int32 ModelEnumerator::EnumerateElement (const ModelerAPI::Element& element, ModelerAPI::CoordinateSystem coordSystem, Int32 vertexOffset, TriangleEnumerator& enumerator) const
 {
 	Int32 currentVertexOffset = vertexOffset;
 	for (Int32 bodyIndex = 1; bodyIndex <= element.GetTessellatedBodyCount (); ++bodyIndex) {
@@ -137,7 +181,7 @@ Int32 ModelEnumerator::EnumerateElement (const ModelerAPI::Element& element, Int
 
 		for (Int32 vertexIndex = 1; vertexIndex <= body.GetVertexCount (); ++vertexIndex) {
 			ModelerAPI::Vertex vertex;
-			body.GetVertex (vertexIndex, &vertex, ModelerAPI::CoordinateSystem::World);
+			body.GetVertex (vertexIndex, &vertex, coordSystem);
 			enumerator.OnVertex (vertex);
 		}
 

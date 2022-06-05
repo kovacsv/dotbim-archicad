@@ -3,6 +3,7 @@
 #include "Vertex.hpp"
 #include "Model.hpp"
 #include "ModelElement.hpp"
+#include "Transformation.hpp"
 
 using GuidAndType = GS::Pair<GS::Guid, ModelerAPI::Element::Type>;
 
@@ -37,11 +38,14 @@ public:
 
 	USize				GetElementCount () const;
 	const GS::Guid&		GetElementGuid (UIndex index) const;
+	bool				GetElementBaseElementId (UIndex index, ModelerAPI::BaseElemId& baseElemId) const;
+	bool				GetElementTransformation (UIndex index, ModelerAPI::Transformation& transformation) const;
 	void				EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const;
 
 private:
 	void	BuildHierarchy ();
-	Int32	EnumerateElement (const ModelerAPI::Element& element, Int32 vertexOffset, TriangleEnumerator& enumerator) const;
+	bool	IsHierarchicalMainElement (const GS::Guid& elementGuid) const;
+	Int32	EnumerateElement (const ModelerAPI::Element& element, ModelerAPI::CoordinateSystem coordSystem, Int32 vertexOffset, TriangleEnumerator& enumerator) const;
 
 	const ModelerAPI::Model&						model;
 	GS::Array<GuidAndType>							topLevelElements;
