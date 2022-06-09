@@ -10,6 +10,7 @@
 
 #include "exp.h"
 
+#include "DotbimImporter.hpp"
 #include "DotbimExporter.hpp"
 #include "PropertyHandler.hpp"
 
@@ -22,6 +23,7 @@ static const GSResID AddOnMenuID				= ID_ADDON_MENU;
 
 static const GSResID AddOnStrsID				= ID_ADDON_STRS;
 	static const Int32 FormatNameID				= 1;
+	static const Int32 MergeCommandNameID		= 2;
 
 static const GSResID AddOnWarning3DStrsID		= ID_ADDON_WARN3D_STRS;
 	static const Int32 Warning3DLargeTextID		= 1;
@@ -30,6 +32,8 @@ static const GSResID AddOnWarning3DStrsID		= ID_ADDON_WARN3D_STRS;
 	static const Int32 Warning3DCancelTextID	= 4;
 
 static const GSType FileTypeId					= 1;
+
+static const bool IsImportEnabled = false;
 
 static GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Location& location)
 {
@@ -119,6 +123,21 @@ static GSErrCode ExportDotbimFromMenu ()
 	return ExportDotbimFile (model, location);
 }
 
+static GSErrCode DotbimFileTypeHandler (const API_IOParams* ioParams, Modeler::SightPtr sight)
+{
+	if (ioParams->method == IO_OPEN) {
+		return ImportDotbim (*ioParams->fileLoc);
+	} else if (ioParams->method == IO_MERGE) {
+		GS::UniString commandString = RSGetIndString (AddOnStrsID, MergeCommandNameID, ACAPI_GetOwnResModule ());
+		return ACAPI_CallUndoableCommand (commandString, [&] () -> GSErrCode {
+			return ImportDotbim (*ioParams->fileLoc);
+		});
+	} else if (ioParams->method == IO_SAVEAS3D) {
+		return ExportDotbimFromSaveAs (ioParams, sight);
+	}
+	return Error;
+}
+
 static GSErrCode MenuCommandHandler (const API_MenuParams *menuParams)
 {
 	switch (menuParams->menuItemRef.menuResID) {
@@ -150,6 +169,10 @@ GSErrCode __ACDLL_CALL RegisterInterface (void)
 		return err;
 	}
 
+	API_IOMethod method = SaveAs3DSupported;
+	if (IsImportEnabled) {
+		method = Open2DSupported | Merge2DSupported | SaveAs3DSupported;
+	}
 	err = ACAPI_Register_FileType (
 		FileTypeId,
 		'DBIM',
@@ -158,7 +181,7 @@ GSErrCode __ACDLL_CALL RegisterInterface (void)
 		ID_ADDON_ICON,
 		AddOnStrsID,
 		FormatNameID,
-		SaveAs3DSupported
+		method
 	);
 	if (err != NoError) {
 		return err;
@@ -176,7 +199,7 @@ GSErrCode __ACENV_CALL Initialize (void)
 		return err;
 	}
 
-	err = ACAPI_Install_FileTypeHandler3D (FileTypeId, ExportDotbimFromSaveAs);
+	err = ACAPI_Install_FileTypeHandler3D (FileTypeId, DotbimFileTypeHandler);
 	if (err != NoError) {
 		return err;
 	}
