@@ -270,7 +270,11 @@ static void ExportElement (
 	ACAPI_Element_GetHeader (&apiElemHead);
 
 	GS::UniString elemTypeName;
+#if defined(ServerMainVers_2600)
+	ACAPI_Goodies_GetElemTypeName (apiElemHead.type, elemTypeName);
+#else
 	ACAPI_Goodies (APIAny_GetElemTypeNameID, (void *)apiElemHead.typeID, &elemTypeName);
+#endif
 	std::string elementTypeNameStr (elemTypeName.ToCStr ().Get ());
 	elementObject.AddMember ("type", CreateStringValue (document, elementTypeNameStr), allocator);
 
