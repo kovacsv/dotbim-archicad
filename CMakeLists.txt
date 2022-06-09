@@ -18,7 +18,11 @@ function (SetCompilerOptions target)
 			-Wno-reorder
 			-Wno-overloaded-virtual
 			-Wno-unused-parameter
-			-Wno-deprecated)
+			-Wno-deprecated
+			-Wno-unknown-pragmas
+			-Wno-missing-braces
+			-Wno-unused-private-field
+			-Wno-non-c-typedef-for-linkage)
 	endif ()
 endfunction ()
 
