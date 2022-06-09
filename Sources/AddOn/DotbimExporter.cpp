@@ -265,14 +265,13 @@ static void ExportElement (
 	std::string elementGuidStr = elementGuid.ToString ().ToCStr ();
 	elementObject.AddMember ("guid", CreateStringValue (document, elementGuidStr), allocator);
 
-	API_Element apiElement;
-	BNZeroMemory (&apiElement, sizeof (API_Element));
-	apiElement.header.guid = GSGuid2APIGuid (elementGuid);
-	ACAPI_Element_Get (&apiElement);
+	API_Elem_Head apiElemHead = {};
+	apiElemHead.guid = GSGuid2APIGuid (elementGuid);
+	ACAPI_Element_GetHeader (&apiElemHead);
 
 	GS::UniString elemTypeName;
-	ACAPI_Goodies (APIAny_GetElemTypeNameID, (void*) apiElement.header.typeID, &elemTypeName);
-	std::string elementTypeNameStr = elemTypeName.ToCStr (0, MaxUSize, CC_UTF8).Get ();
+	ACAPI_Goodies (APIAny_GetElemTypeNameID, (void *)apiElemHead.typeID, &elemTypeName);
+	std::string elementTypeNameStr (elemTypeName.ToCStr ().Get ());
 	elementObject.AddMember ("type", CreateStringValue (document, elementTypeNameStr), allocator);
 
 	rapidjson::Value infoObject (rapidjson::kObjectType);

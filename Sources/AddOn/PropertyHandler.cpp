@@ -11,8 +11,8 @@ static const GSResID AddOnPropStrsID	= ID_ADDON_PROP_STRS;
 
 static void ProcessProperty (const GS::UniString& name, const GS::UniString& val, const PropertyProcessor& processor)
 {
-	std::string propertyName = name.ToCStr (0, MaxUSize, CC_UTF8).Get ();
-	std::string propertyVal = val.ToCStr (0, MaxUSize, CC_UTF8).Get ();
+	std::string propertyName = name.ToCStr ().Get ();
+	std::string propertyVal = val.ToCStr ().Get ();
 	processor (propertyName, propertyVal);
 }
 
@@ -21,8 +21,6 @@ GS::UniString GetProjectName ()
 	GS::UniString projectName = RSGetIndString (AddOnPropStrsID, UntitledID, ACAPI_GetOwnResModule ());
 
 	API_ProjectInfo projectInfo = {};
-	BNZeroMemory (&projectInfo, sizeof (API_ProjectInfo));
-
 	GSErrCode err = ACAPI_Environment (APIEnv_ProjectID, &projectInfo);
 	if (err != NoError || projectInfo.untitled || projectInfo.projectName == nullptr) {
 		return projectName;

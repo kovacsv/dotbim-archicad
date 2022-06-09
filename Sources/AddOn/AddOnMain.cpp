@@ -63,9 +63,9 @@ static GSErrCode ExportDotbimFromSaveAs (const API_IOParams* ioParams, Modeler::
 
 static GSErrCode ExportDotbimFromMenu ()
 {
-	API_WindowInfo windowInfo;
-	BNZeroMemory (&windowInfo, sizeof (API_WindowInfo));
-	if (ACAPI_Database (APIDb_GetCurrentWindowID, &windowInfo, nullptr) != NoError) {
+	API_WindowInfo windowInfo = {};
+
+	if (ACAPI_Database (APIDb_GetCurrentWindowID, &windowInfo) != NoError) {
 		return Error;
 	}
 
@@ -102,7 +102,7 @@ static GSErrCode ExportDotbimFromMenu ()
 
 	DG::FileDialog saveFileDialog (DG::FileDialog::Type::Save);
 	GS::UniString fileTypeString = RSGetIndString (AddOnStrsID, FormatNameID, ACAPI_GetOwnResModule ());
-	FTM::FileTypeManager fileTypeManager (fileTypeString.ToCStr (0, MaxUSize, CC_UTF8));
+	FTM::FileTypeManager fileTypeManager (fileTypeString.ToCStr ());
 	FTM::FileType fileType (nullptr, "bim", 0, 0, 0);
 	FTM::TypeID fileTypeId = FTM::FileTypeManager::SearchForType (fileType);
 	saveFileDialog.AddFilter (fileTypeId);
