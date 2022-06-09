@@ -11,6 +11,7 @@
 
 'STR#' ID_ADDON_STRS "Add-on Strings" {
 /* [  1] */		"Dotbim File"
+/* [  2] */		"Merge Dotbim File"
 }
 
 'STR#' ID_ADDON_PROP_STRS "Add-on Property Strings" {

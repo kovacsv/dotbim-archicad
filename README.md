@@ -1,4 +1,4 @@
-# Archicad Dotbim Exporter
+# Archicad Dotbim Add-On
 
 [![Build](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml/badge.svg)](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml)
 
