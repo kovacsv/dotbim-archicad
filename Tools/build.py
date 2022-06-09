@@ -41,13 +41,25 @@ if platform.system () == 'Windows':
                 '-G', 'Visual Studio 16 2019',
                 '-A', 'x64'
             ]
-    
+elif platform.system () == 'Darwin':
+    if args.projGenerator != None:
+        generatorParams = [
+            '-G', args.projGenerator,
+            '-A', 'x86_64'
+        ]
+    else:
+        generatorParams = [
+            '-G', 'Xcode',
+            '-DCMAKE_OSX_ARCHITECTURES="x86_64"'
+        ]
+
 if generatorParams == None:
     PrintError ('Failed to build on this platform.')
     sys.exit (1)
 
 buildDir = os.path.join (rootPath, 'Build', 'AC' + args.acVersion)
 devKitDir = os.path.realpath (args.devKitDir)
+cmake = 'cmake'
 cmakeParams = []
 cmakeParams.append ('cmake')
 cmakeParams.extend (['-B', buildDir])
@@ -67,12 +79,12 @@ if projGenResult != 0:
 
 for buildConfig in ['Debug', 'Release']:
     buildResult = subprocess.call ([
-        'cmake',
+        cmake,
         '--build', buildDir,
         '--config', buildConfig
     ])
     if buildResult != 0:
         PrintError ('Failed to build project.')
         sys.exit (1)
-    
+
 sys.exit (0)
