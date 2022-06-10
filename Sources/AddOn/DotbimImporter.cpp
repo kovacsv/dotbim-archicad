@@ -1,11 +1,47 @@
 #include "DotbimImporter.hpp"
+#include "Quaternion.hpp"
 
 #include "ACAPinc.h"
 
 #include "File.hpp"
+#include "TRANMAT.h"
 
 #include "rapidjson.h"
 #include "document.h"
+
+// Assuming that the transformation doesn't contain scaling
+//static void ComposeMatrix (TRANMAT& tranmat, const Vector3D& translation, const Quaternion& rotation)
+//{
+//	double tx = translation.x;
+//	double ty = translation.y;
+//	double tz = translation.z;
+//	double qx = rotation.qx;
+//	double qy = rotation.qy;
+//	double qz = rotation.qz;
+//	double qw = rotation.qw;
+//
+//	double x2 = qx + qx;
+//	double y2 = qy + qy;
+//	double z2 = qz + qz;
+//	double xx = qx * x2;
+//	double xy = qx * y2;
+//	double xz = qx * z2;
+//	double yy = qy * y2;
+//	double yz = qy * z2;
+//	double zz = qz * z2;
+//	double wx = qw * x2;
+//	double wy = qw * y2;
+//	double wz = qw * z2;
+//
+//	Geometry::Matrix34 matrix (
+//		{ (1.0 - (yy + zz)), (xy + wz), (xz - wy) },
+//		{ (xy - wz), (1.0 - (xx + zz)), (yz + wx) },
+//		{ (xz + wy), (yz - wx), (1.0 - (xx + yy)) },
+//		{ tx, ty, tz }
+//	);
+//
+//	tranmat.SetMatrix (matrix);
+//}
 
 static void SetAPIElementType (API_Element& element, API_ElemTypeID elemTypeId)
 {

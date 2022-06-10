@@ -1,6 +1,7 @@
 #include "DotbimExporter.hpp"
 #include "ModelEnumerator.hpp"
 #include "PropertyHandler.hpp"
+#include "Quaternion.hpp"
 
 #include "ACAPinc.h"
 
@@ -63,24 +64,6 @@ static rapidjson::Value CreateColorValue (rapidjson::Document& document, const C
 	colorObj.AddMember ("a", color.a, allocator);
 	return colorObj;
 }
-
-class Quaternion
-{
-public:
-	Quaternion (double qx, double qy, double qz, double qw) :
-		qx (qx),
-		qy (qy),
-		qz (qz),
-		qw (qw)
-	{
-
-	}
-
-	double qx;
-	double qy;
-	double qz;
-	double qw;
-};
 
 // Assuming that the transformation doesn't contain scaling
 // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
