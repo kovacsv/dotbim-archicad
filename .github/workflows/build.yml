@@ -41,3 +41,21 @@ jobs:
       run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 25.3002.zip" -o"dotbim-archicad/Build/AC25"
     - name: Build
       run: python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
+
+  build_ac26:
+    runs-on: [windows-2019]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        path: dotbim-archicad
+    - name: Checkout devkits
+      uses: actions/checkout@v3
+      with:
+        repository: kovacsv/ArchicadDevKits
+        token: ${{ secrets.PAT }}
+        path: ArchicadDevKits
+    - name: Unzip devkit
+      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 26.3000.zip" -o"dotbim-archicad/Build/AC26"
+    - name: Build
+      run: python dotbim-archicad/Tools/build.py --acVersion "26" --devKitDir "Build/AC26/API Development Kit 26.3000" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
