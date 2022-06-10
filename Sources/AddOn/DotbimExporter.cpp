@@ -4,6 +4,7 @@
 #include "Quaternion.hpp"
 
 #include "ACAPinc.h"
+#include "ApiUtils.hpp"
 
 #include "AttributeIndex.hpp"
 #include "ModelElement.hpp"
@@ -252,12 +253,7 @@ static void ExportElement (
 	apiElemHead.guid = GSGuid2APIGuid (elementGuid);
 	ACAPI_Element_GetHeader (&apiElemHead);
 
-	GS::UniString elemTypeName;
-#if defined(ServerMainVers_2600)
-	ACAPI_Goodies_GetElemTypeName (apiElemHead.type, elemTypeName);
-#else
-	ACAPI_Goodies (APIAny_GetElemTypeNameID, (void *)apiElemHead.typeID, &elemTypeName);
-#endif
+	GS::UniString elemTypeName = GetElemTypeName (apiElemHead);
 	std::string elementTypeNameStr (elemTypeName.ToCStr ().Get ());
 	elementObject.AddMember ("type", CreateStringValue (document, elementTypeNameStr), allocator);
 

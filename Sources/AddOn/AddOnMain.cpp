@@ -4,19 +4,10 @@
 #include "ResourceIds.hpp"
 #include "DGModule.hpp"
 
-#include "Sight.hpp"
-#if defined(ServerMainVers_2600)
-#include "IAttributeReader.hpp"
-#else
-#include "AttributeReader.hpp"
-#endif
-#include "Model.hpp"
-
-#include "exp.h"
-
 #include "DotbimImporter.hpp"
 #include "DotbimExporter.hpp"
 #include "PropertyHandler.hpp"
+#include "ApiUtils.hpp"
 
 static const GSResID AddOnInfoID				= ID_ADDON_INFO;
 	static const Int32 AddOnNameID				= 1;
@@ -61,19 +52,9 @@ static GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Loc
 static GSErrCode ExportDotbimFromSaveAs (const API_IOParams* ioParams, Modeler::SightPtr sight)
 {
 	ModelerAPI::Model model;
-
-#if defined(ServerMainVers_2600)
-	GS::Owner<Modeler::IAttributeReader> attributeReader (ACAPI_Attribute_GetCurrentAttributeSetReader ());
-	if (EXPGetModel (sight, &model, attributeReader.Get ()) != NoError) {
+	if (GetAPIModel (sight, &model) != NoError) {
 		return Error;
 	}
-#else
-	AttributeReader	  attributeReader;
-	if (EXPGetModel (sight, &model, &attributeReader) != NoError) {
-		return Error;
-	}
-#endif
-
 	return ExportDotbimFile (model, *ioParams->fileLoc);
 }
 
@@ -111,17 +92,9 @@ static GSErrCode ExportDotbimFromMenu ()
 
 	Modeler::SightPtr sightPtr ((Modeler::Sight*) currentSight);
 	Modeler::ConstModel3DPtr modelPtr (sightPtr->GetMainModelPtr ());
-#if defined(ServerMainVers_2600)
-	GS::Owner<Modeler::IAttributeReader> attributeReader (ACAPI_Attribute_GetCurrentAttributeSetReader ());
-	if (EXPGetModel (modelPtr, &model, attributeReader.Get ()) != NoError) {
+	if (GetAPIModel (modelPtr, &model) != NoError) {
 		return Error;
 	}
-#else
-	AttributeReader attributeReader;
-	if (EXPGetModel (modelPtr, &model, &attributeReader) != NoError) {
-		return Error;
-	}
-#endif
 
 	DG::FileDialog saveFileDialog (DG::FileDialog::Type::Save);
 	GS::UniString fileTypeString = RSGetIndString (AddOnStrsID, FormatNameID, ACAPI_GetOwnResModule ());
