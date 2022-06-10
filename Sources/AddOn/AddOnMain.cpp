@@ -5,7 +5,11 @@
 #include "DGModule.hpp"
 
 #include "Sight.hpp"
+#if defined(ServerMainVers_2600)
+#include "IAttributeReader.hpp"
+#else
 #include "AttributeReader.hpp"
+#endif
 #include "Model.hpp"
 
 #include "exp.h"
@@ -56,20 +60,28 @@ static GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Loc
 
 static GSErrCode ExportDotbimFromSaveAs (const API_IOParams* ioParams, Modeler::SightPtr sight)
 {
-	AttributeReader attributeReader;
 	ModelerAPI::Model model;
+
+#if defined(ServerMainVers_2600)
+	GS::Owner<Modeler::IAttributeReader> attributeReader (ACAPI_Attribute_GetCurrentAttributeSetReader ());
+	if (EXPGetModel (sight, &model, attributeReader.Get ()) != NoError) {
+		return Error;
+	}
+#else
+	AttributeReader	  attributeReader;
 	if (EXPGetModel (sight, &model, &attributeReader) != NoError) {
 		return Error;
 	}
+#endif
 
 	return ExportDotbimFile (model, *ioParams->fileLoc);
 }
 
 static GSErrCode ExportDotbimFromMenu ()
 {
-	API_WindowInfo windowInfo;
-	BNZeroMemory (&windowInfo, sizeof (API_WindowInfo));
-	if (ACAPI_Database (APIDb_GetCurrentWindowID, &windowInfo, nullptr) != NoError) {
+	API_WindowInfo windowInfo = {};
+
+	if (ACAPI_Database (APIDb_GetCurrentWindowID, &windowInfo) != NoError) {
 		return Error;
 	}
 
@@ -91,7 +103,6 @@ static GSErrCode ExportDotbimFromMenu ()
 		}
 	}
 
-	AttributeReader attributeReader;
 	ModelerAPI::Model model;
 	void* currentSight = nullptr;
 	if (ACAPI_3D_GetCurrentWindowSight (&currentSight) != NoError) {
@@ -100,13 +111,21 @@ static GSErrCode ExportDotbimFromMenu ()
 
 	Modeler::SightPtr sightPtr ((Modeler::Sight*) currentSight);
 	Modeler::ConstModel3DPtr modelPtr (sightPtr->GetMainModelPtr ());
+#if defined(ServerMainVers_2600)
+	GS::Owner<Modeler::IAttributeReader> attributeReader (ACAPI_Attribute_GetCurrentAttributeSetReader ());
+	if (EXPGetModel (modelPtr, &model, attributeReader.Get ()) != NoError) {
+		return Error;
+	}
+#else
+	AttributeReader attributeReader;
 	if (EXPGetModel (modelPtr, &model, &attributeReader) != NoError) {
 		return Error;
 	}
+#endif
 
 	DG::FileDialog saveFileDialog (DG::FileDialog::Type::Save);
 	GS::UniString fileTypeString = RSGetIndString (AddOnStrsID, FormatNameID, ACAPI_GetOwnResModule ());
-	FTM::FileTypeManager fileTypeManager (fileTypeString.ToCStr (0, MaxUSize, CC_UTF8));
+	FTM::FileTypeManager fileTypeManager (fileTypeString.ToCStr ());
 	FTM::FileType fileType (nullptr, "bim", 0, 0, 0);
 	FTM::TypeID fileTypeId = FTM::FileTypeManager::SearchForType (fileType);
 	saveFileDialog.AddFilter (fileTypeId);
