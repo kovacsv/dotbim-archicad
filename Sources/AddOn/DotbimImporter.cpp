@@ -1,5 +1,5 @@
 #include "DotbimImporter.hpp"
-#include "Quaternion.hpp"
+#include "MatrixUtils.hpp"
 
 #include "ACAPinc.h"
 #include "ApiUtils.hpp"
@@ -9,40 +9,6 @@
 
 #include "rapidjson.h"
 #include "document.h"
-
-// Assuming that the transformation doesn't contain scaling
-//static void ComposeMatrix (TRANMAT& tranmat, const Vector3D& translation, const Quaternion& rotation)
-//{
-//	double tx = translation.x;
-//	double ty = translation.y;
-//	double tz = translation.z;
-//	double qx = rotation.qx;
-//	double qy = rotation.qy;
-//	double qz = rotation.qz;
-//	double qw = rotation.qw;
-//
-//	double x2 = qx + qx;
-//	double y2 = qy + qy;
-//	double z2 = qz + qz;
-//	double xx = qx * x2;
-//	double xy = qx * y2;
-//	double xz = qx * z2;
-//	double yy = qy * y2;
-//	double yz = qy * z2;
-//	double zz = qz * z2;
-//	double wx = qw * x2;
-//	double wy = qw * y2;
-//	double wz = qw * z2;
-//
-//	Geometry::Matrix34 matrix (
-//		{ (1.0 - (yy + zz)), (xy + wz), (xz - wy) },
-//		{ (xy - wz), (1.0 - (xx + zz)), (yz + wx) },
-//		{ (xz + wy), (yz - wx), (1.0 - (xx + yy)) },
-//		{ tx, ty, tz }
-//	);
-//
-//	tranmat.SetMatrix (matrix);
-//}
 
 static GSErrCode ImportDotbimElement (
 	const rapidjson::Value& meshes,
@@ -111,7 +77,35 @@ static GSErrCode ImportDotbimElement (
 		return err;
 	}
 
-	// TODO: transformation
+	const rapidjson::Value& vectorObj = element["vector"];
+	Geometry::Vector3D translation (
+		vectorObj["x"].GetDouble (),
+		vectorObj["y"].GetDouble (),
+		vectorObj["z"].GetDouble ()
+	);
+
+	const rapidjson::Value& rotationObj = element["rotation"];
+	Quaternion rotation (
+		rotationObj["qx"].GetDouble (),
+		rotationObj["qy"].GetDouble (),
+		rotationObj["qz"].GetDouble (),
+		rotationObj["qw"].GetDouble ()
+	);
+
+	Geometry::Matrix34 matrix = ComposeMatrix (translation, rotation);
+	morphElement.morph.tranmat.tmx[0] = matrix.Get (0, 0);
+	morphElement.morph.tranmat.tmx[1] = matrix.Get (0, 1);
+	morphElement.morph.tranmat.tmx[2] = matrix.Get (0, 2);
+	morphElement.morph.tranmat.tmx[3] = matrix.Get (0, 3);
+	morphElement.morph.tranmat.tmx[4] = matrix.Get (1, 0);
+	morphElement.morph.tranmat.tmx[5] = matrix.Get (1, 1);
+	morphElement.morph.tranmat.tmx[6] = matrix.Get (1, 2);
+	morphElement.morph.tranmat.tmx[7] = matrix.Get (1, 3);
+	morphElement.morph.tranmat.tmx[8] = matrix.Get (2, 0);
+	morphElement.morph.tranmat.tmx[9] = matrix.Get (2, 1);
+	morphElement.morph.tranmat.tmx[10] = matrix.Get (2, 2);
+	morphElement.morph.tranmat.tmx[11] = matrix.Get (2, 3);
+
 	err = ACAPI_Element_Create (&morphElement, &bodyMemo);
 	if (err != NoError) {
 		return err;

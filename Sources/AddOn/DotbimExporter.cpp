@@ -1,7 +1,7 @@
 #include "DotbimExporter.hpp"
 #include "ModelEnumerator.hpp"
 #include "PropertyHandler.hpp"
-#include "Quaternion.hpp"
+#include "MatrixUtils.hpp"
 
 #include "ACAPinc.h"
 #include "ApiUtils.hpp"
@@ -64,63 +64,6 @@ static rapidjson::Value CreateColorValue (rapidjson::Document& document, const C
 	colorObj.AddMember ("b", color.b, allocator);
 	colorObj.AddMember ("a", color.a, allocator);
 	return colorObj;
-}
-
-// Assuming that the transformation doesn't contain scaling
-// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-static void DecomposeMatrix (const TRANMAT& tranmat, Vector3D& translation, Quaternion& rotation)
-{
-	const Geometry::Matrix34& matrix = tranmat.GetMatrix ();
-	translation = Vector3D (
-		matrix.Get (0, 3),
-		matrix.Get (1, 3),
-		matrix.Get (2, 3)
-	);
-
-	double m00 = matrix.Get (0, 0);
-	double m01 = matrix.Get (0, 1);
-	double m02 = matrix.Get (0, 2);
-	double m10 = matrix.Get (1, 0);
-	double m11 = matrix.Get (1, 1);
-	double m12 = matrix.Get (1, 2);
-	double m20 = matrix.Get (2, 0);
-	double m21 = matrix.Get (2, 1);
-	double m22 = matrix.Get (2, 2);
-
-	double tr = m00 + m11 + m22;
-	if (tr > 0.0) {
-		double s = sqrt (tr + 1.0) * 2.0;
-		rotation = Quaternion (
-			(m21 - m12) / s,
-			(m02 - m20) / s,
-			(m10 - m01) / s,
-			0.25 * s
-		);
-	} else if ((m00 > m11) && (m00 > m22)) {
-		double s = sqrt (1.0 + m00 - m11 - m22) * 2.0;
-		rotation = Quaternion (
-			0.25 * s,
-			(m01 + m10) / s,
-			(m02 + m20) / s,
-			(m21 - m12) / s
-		);
-	} else if (m11 > m22) {
-		double s = sqrt (1.0 + m11 - m00 - m22) * 2.0;
-		rotation = Quaternion (
-			(m01 + m10) / s,
-			0.25 * s,
-			(m12 + m21) / s,
-			(m02 - m20) / s
-		);
-	} else {
-		double s = sqrt (1.0 + m22 - m00 - m11) * 2.0;
-		rotation = Quaternion (
-			(m02 + m20) / s,
-			(m12 + m21) / s,
-			0.25 * s,
-			(m10 - m01) / s
-		);
-	}
 }
 
 class JsonBuilderEnumerator : public TriangleEnumerator
@@ -220,7 +163,7 @@ static void ExportElement (
 		TRANMAT tranmat;
 		transformation.ToTRANMAT (&tranmat);
 		if (!tranmat.IsIdentity ()) {
-			DecomposeMatrix (tranmat, translation, rotation);
+			DecomposeMatrix (tranmat.GetMatrix (), translation, rotation);
 		}
 	}
 
