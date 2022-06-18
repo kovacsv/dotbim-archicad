@@ -4,16 +4,63 @@
 #include "ACAPinc.h"
 #include "ApiUtils.hpp"
 
+#include "Color.hpp"
 #include "File.hpp"
 #include "TRANMAT.h"
+#include "StringConversion.hpp"
 
 #include "rapidjson.h"
 #include "document.h"
 
+// TODO: handle teamwork rights
+static API_AttributeIndex CreateMaterial (const Gfx::Color& color, const GS::UniString& nameTemplate)
+{
+	API_Attribute material = {};
+	BNZeroMemory (&material, sizeof (API_Attribute));
+	
+	material.header.typeID = API_MaterialID;
+	GS::UniString colorString = "(" +
+		GS::ValueToString (color.GetRed ()) + ", " +
+		GS::ValueToString (color.GetGreen ()) + ", " +
+		GS::ValueToString (color.GetBlue ()) + ", " +
+		GS::ValueToString (color.GetAlpha ()) +
+	")";
+	GS::UniString materialName = GS::UniString::Printf (nameTemplate, colorString.ToPrintf ());
+	material.header.index = 0;
+	material.header.uniStringNamePtr = &materialName;
+
+	if (ACAPI_Attribute_Get (&material) == NoError) {
+		delete material.material.texture.fileLoc; // :(
+		return material.header.index;
+	}
+
+	material.material.surfaceRGB = {
+		color.GetRed () / 255.0,
+		color.GetGreen () / 255.0,
+		color.GetBlue () / 255.0
+	};
+	material.material.transpPc = (short) (100.0 - color.GetAlpha () / 255.0 * 100.0);
+
+	// default values stolen from "Paint" materials
+	material.material.specularRGB = { 1.0, 1.0, 1.0 };
+	material.material.ambientPc = 93;
+	material.material.diffusePc = 41;
+	material.material.shine = 72;
+	material.material.specularPc = 10;
+
+	if (ACAPI_Attribute_Create (&material, nullptr) == NoError) {
+		return material.header.index;
+	}
+
+	return 0;
+}
+
 static GSErrCode ImportDotbimElement (
 	const rapidjson::Value& meshes,
 	const GS::HashTable<Int32, rapidjson::SizeType>& meshIdToIndex,
-	const rapidjson::Value& element)
+	const rapidjson::Value& element,
+	GS::HashTable<Gfx::Color, API_AttributeIndex>& colorToMaterialIndex,
+	const GS::UniString& materialNameTemplate)
 {
 	Int32 meshId = element["mesh_id"].GetInt ();
 	if (!meshIdToIndex.ContainsKey (meshId)) {
@@ -43,6 +90,15 @@ static GSErrCode ImportDotbimElement (
 		vertexIndices.Push (vertexIndex);
 	}
 
+	bool hasFaceColors = element.HasMember ("face_colors");
+	const rapidjson::Value& defaultColorObj = element["color"];
+	Gfx::Color defaultColor (
+		(UChar) defaultColorObj["r"].GetInt (),
+		(UChar) defaultColorObj["g"].GetInt (),
+		(UChar) defaultColorObj["b"].GetInt (),
+		(UChar) defaultColorObj["a"].GetInt ()
+	);
+
 	const rapidjson::Value& indices = mesh["indices"];
 	for (rapidjson::SizeType i = 0; i < indices.Size (); i += 3) {
 		UInt32 v0 = vertexIndices[indices[i + 0].GetInt ()];
@@ -56,10 +112,25 @@ static GSErrCode ImportDotbimElement (
 		ACAPI_Body_AddEdge (bodyData, v1, v2, e1);
 		ACAPI_Body_AddEdge (bodyData, v2, v0, e2);
 		
-		// TODO: material
+		Gfx::Color polygonColor = defaultColor;
+		if (hasFaceColors) {
+			rapidjson::SizeType colorIndex = (i / 3) * 4;
+			const rapidjson::Value& faceColors = element["face_colors"];
+			polygonColor.SetRed ((UChar) faceColors[colorIndex + 0].GetInt ());
+			polygonColor.SetGreen ((UChar) faceColors[colorIndex + 1].GetInt ());
+			polygonColor.SetBlue ((UChar) faceColors[colorIndex + 2].GetInt ());
+			polygonColor.SetAlpha ((UChar) faceColors[colorIndex + 3].GetInt ());
+		}
+
 		API_OverriddenAttribute material;
-		material.attributeIndex = 4;
 		material.overridden = true;
+
+		if (colorToMaterialIndex.ContainsKey (polygonColor)) {
+			material.attributeIndex = colorToMaterialIndex[polygonColor];
+		} else {
+			material.attributeIndex = CreateMaterial (polygonColor, materialNameTemplate);
+			colorToMaterialIndex.Add (polygonColor, material.attributeIndex);
+		}
 
 		UInt32 triangleIndex = 0;
 		ACAPI_Body_AddPolygon (bodyData, { e0, e1, e2 }, 0, material, triangleIndex);
@@ -106,6 +177,7 @@ static GSErrCode ImportDotbimElement (
 	morphElement.morph.tranmat.tmx[10] = matrix.Get (2, 2);
 	morphElement.morph.tranmat.tmx[11] = matrix.Get (2, 3);
 
+	morphElement.morph.edgeType = APIMorphEdgeType_HardHiddenEdge;
 	err = ACAPI_Element_Create (&morphElement, &bodyMemo);
 	if (err != NoError) {
 		return err;
@@ -115,11 +187,15 @@ static GSErrCode ImportDotbimElement (
 	return NoError;
 }
 
-static GSErrCode ImportDotbimContent (const char* fileContent)
+static GSErrCode ImportDotbimContent (const char* fileContent, const GS::UniString& materialNameTemplate)
 {
 	rapidjson::Document document;
 	document.Parse (fileContent);
 	
+	if (document.HasParseError ()) {
+		return Error;
+	}
+
 	if (!document.HasMember ("meshes") || !document.HasMember ("elements")) {
 		return Error;
 	}
@@ -132,15 +208,16 @@ static GSErrCode ImportDotbimContent (const char* fileContent)
 	}
 
 	rapidjson::Value elements = document["elements"].GetArray ();
+	GS::HashTable<Gfx::Color, API_AttributeIndex> colorToMaterialIndex;
 	for (rapidjson::SizeType elementIndex = 0; elementIndex < elements.Size (); ++elementIndex) {
 		const rapidjson::Value& element = elements[elementIndex];
-		ImportDotbimElement (meshes, meshIdToIndex, element);
+		ImportDotbimElement (meshes, meshIdToIndex, element, colorToMaterialIndex, materialNameTemplate);
 	}
 
 	return NoError;
 }
 
-GSErrCode ImportDotbim (const IO::Location& fileLocation)
+GSErrCode ImportDotbim (const IO::Location& fileLocation, const GS::UniString& materialNameTemplate)
 {
 	IO::File file (fileLocation);
 	if (file.GetStatus () != NoError) {
@@ -157,10 +234,11 @@ GSErrCode ImportDotbim (const IO::Location& fileLocation)
 	}
 
 	GSErrCode result = NoError;
-	char* fileContent = new char[fileSize];
+	char* fileContent = new char[fileSize + 1];
 	if (file.ReadBin (fileContent, (USize) fileSize) == NoError) {
+		fileContent[fileSize] = 0;
 		try {
-			result = ImportDotbimContent (fileContent);
+			result = ImportDotbimContent (fileContent, materialNameTemplate);
 		} catch (...) {
 			result = Error;
 		}

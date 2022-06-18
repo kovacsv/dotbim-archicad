@@ -12,6 +12,7 @@
 'STR#' ID_ADDON_STRS "Add-on Strings" {
 /* [  1] */		"Dotbim File"
 /* [  2] */		"Merge Dotbim File"
+/* [  3] */		"Dotbim Material %T"
 }
 
 'STR#' ID_ADDON_PROP_STRS "Add-on Property Strings" {
@@ -26,4 +27,6 @@
 /* [  2] */		"To export the model you must open the 3D window. What would you like to do?"
 /* [  3] */		"Open 3D"
 /* [  4] */		"Cancel"
+/* [  5] */		"Failed to import dotbim file."
+/* [  6] */		"OK"
 }

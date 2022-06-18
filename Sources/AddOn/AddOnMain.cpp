@@ -19,16 +19,17 @@ static const GSResID AddOnMenuID				= ID_ADDON_MENU;
 static const GSResID AddOnStrsID				= ID_ADDON_STRS;
 	static const Int32 FormatNameID				= 1;
 	static const Int32 MergeCommandNameID		= 2;
+	static const Int32 MaterialNameID			= 3;
 
 static const GSResID AddOnWarning3DStrsID		= ID_ADDON_WARN3D_STRS;
 	static const Int32 Warning3DLargeTextID		= 1;
 	static const Int32 Warning3DSmallTextID		= 2;
 	static const Int32 Warning3DOpen3DTextID	= 3;
 	static const Int32 Warning3DCancelTextID	= 4;
+	static const Int32 FailedToImportTextID		= 5;
+	static const Int32 OkTextID					= 6;
 
 static const GSType FileTypeId					= 1;
-
-static const bool IsImportEnabled = false;
 
 static GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Location& location)
 {
@@ -117,17 +118,29 @@ static GSErrCode ExportDotbimFromMenu ()
 
 static GSErrCode DotbimFileTypeHandler (const API_IOParams* ioParams, Modeler::SightPtr sight)
 {
+	GSErrCode result = Error;
 	if (ioParams->method == IO_OPEN) {
-		return ImportDotbim (*ioParams->fileLoc);
+		GS::UniString materialNameTemplate = RSGetIndString (AddOnStrsID, MaterialNameID, ACAPI_GetOwnResModule ());
+		result = ImportDotbim (*ioParams->fileLoc, materialNameTemplate);
 	} else if (ioParams->method == IO_MERGE) {
 		GS::UniString commandString = RSGetIndString (AddOnStrsID, MergeCommandNameID, ACAPI_GetOwnResModule ());
-		return ACAPI_CallUndoableCommand (commandString, [&] () -> GSErrCode {
-			return ImportDotbim (*ioParams->fileLoc);
+		result = ACAPI_CallUndoableCommand (commandString, [&] () -> GSErrCode {
+			GS::UniString materialNameTemplate = RSGetIndString (AddOnStrsID, MaterialNameID, ACAPI_GetOwnResModule ());
+			return ImportDotbim (*ioParams->fileLoc, materialNameTemplate);
 		});
 	} else if (ioParams->method == IO_SAVEAS3D) {
-		return ExportDotbimFromSaveAs (ioParams, sight);
+		result = ExportDotbimFromSaveAs (ioParams, sight);
 	}
-	return Error;
+	if (result != NoError) {
+		if (ioParams->method == IO_OPEN || ioParams->method == IO_MERGE) {
+			DG::ErrorAlert (
+				RSGetIndString (AddOnWarning3DStrsID, FailedToImportTextID, ACAPI_GetOwnResModule ()),
+				"",
+				RSGetIndString (AddOnWarning3DStrsID, OkTextID, ACAPI_GetOwnResModule ())
+			);
+		}
+	}
+	return result;
 }
 
 static GSErrCode MenuCommandHandler (const API_MenuParams *menuParams)
@@ -161,10 +174,6 @@ GSErrCode __ACDLL_CALL RegisterInterface (void)
 		return err;
 	}
 
-	API_IOMethod method = SaveAs3DSupported;
-	if (IsImportEnabled) {
-		method = Open2DSupported | Merge2DSupported | SaveAs3DSupported;
-	}
 	err = ACAPI_Register_FileType (
 		FileTypeId,
 		'DBIM',
@@ -173,7 +182,7 @@ GSErrCode __ACDLL_CALL RegisterInterface (void)
 		ID_ADDON_ICON,
 		AddOnStrsID,
 		FormatNameID,
-		method
+		Open2DSupported | Merge2DSupported | SaveAs3DSupported
 	);
 	if (err != NoError) {
 		return err;
