@@ -52,7 +52,7 @@ static API_AttributeIndex CreateMaterial (const Gfx::Color& color, const GS::Uni
 		return material.header.index;
 	}
 
-	return 0;
+	return APIInvalidAttributeIndex;
 }
 
 static GSErrCode ImportDotbimElement (
