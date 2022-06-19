@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml/badge.svg)](https://github.com/kovacsv/dotbim-archicad/actions/workflows/build.yml)
 
-Archicad Add-On to export the 3D model to [Dotbim (.bim)](https://dotbim.net) format.
+Archicad Add-On to import and export [Dotbim (.bim)](https://dotbim.net) files.
 
 ## How to use?
 
@@ -27,7 +27,11 @@ C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons`
 
 ### Use
 
-The export functionality is available at two places:
+You can access import from:
+- `File > Open > Open...`
+- `File > Interoperability > Merge... > Merge from File...`
+
+You can access export from:
 - `File > Save As...`
 - `File > Interoperability > Export Dotbim File...`
 
@@ -41,7 +45,8 @@ You should install some prerequisites to build the Add-On:
 - [Visual Studio](https://visualstudio.microsoft.com/downloads):
   - Archicad 24: Visual Studio 2017
   - Archicad 25: Visual Studio 2019
-- [Archicad API Development Kit](https://archicadapi.graphisoft.com/) for the target version
+  - Archicad 26: Visual Studio 2019
+- [Archicad API Development Kit](https://archicadapi.graphisoft.com) for the target version
 - [CMake](https://cmake.org) for generating the project file (3.16+)
 - [Python](https://www.python.org) for resource compilation (2.7+ or 3.8+)
 
@@ -50,3 +55,4 @@ You should install some prerequisites to build the Add-On:
 See the `Tools` folder for some preconfigured build scripts for each version. Running one of these scripts also generates the Visual Studio project, so after the first run you can continue to work in Visual Studio.
 - Archicad 24: `Tools/build_ac24.bat`
 - Archicad 25: `Tools/build_ac25.bat`
+- Archicad 26: `Tools/build_ac26.bat`
