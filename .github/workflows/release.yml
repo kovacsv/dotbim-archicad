@@ -60,3 +60,30 @@ jobs:
         draft: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
+
+  release_ac26_win:
+    runs-on: [windows-2019]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        path: dotbim-archicad
+    - name: Checkout devkits
+      uses: actions/checkout@v3
+      with:
+        repository: kovacsv/ArchicadDevKits
+        token: ${{ secrets.PAT }}
+        path: ArchicadDevKits
+    - name: Unzip devkit
+      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 26.3000.zip" -o"dotbim-archicad/Build/AC26"
+    - name: Build
+      run: |
+        python dotbim-archicad/Tools/build.py --acVersion "26" --devKitDir "Build/AC26/API Development Kit 26.3000" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
+        copy "dotbim-archicad/Build/AC26/Release/Dotbim.apx" "dotbim-archicad/Build/AC26/Release/Dotbim_AC26.apx"
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dotbim-archicad/Build/AC26/Release/Dotbim_AC26.apx"
+        draft: true
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
