@@ -216,7 +216,7 @@ std::string ExportDotbim (const ModelerAPI::Model& model)
 	rapidjson::Document document (rapidjson::kObjectType);
 	auto& allocator = document.GetAllocator ();
 
-	document.AddMember ("schema_version", "1.0.0", allocator);
+	document.AddMember ("schema_version", "1.1.0", allocator);
 	rapidjson::Value meshesArray (rapidjson::kArrayType);
 	rapidjson::Value elementsArray (rapidjson::kArrayType);
 
