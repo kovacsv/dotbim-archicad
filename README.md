@@ -7,9 +7,9 @@ Archicad Add-On to import and export [Dotbim (.bim)](https://dotbim.net) files.
 ## How to use?
 
 You can download the latest version here:
-- [Archicad 26 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC26.apx)
-- [Archicad 25 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC25.apx)
-- [Archicad 24 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC24.apx)
+- [Archicad 26 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC26_WIN.apx)
+- [Archicad 25 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC25_WIN.apx)
+- [Archicad 24 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC24_WIN.apx)
 
 ### Install
 
