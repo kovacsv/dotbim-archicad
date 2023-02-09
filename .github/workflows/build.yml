@@ -16,7 +16,7 @@ jobs:
     - name: Download Development Kit
       run: python Tools/download_and_unzip.py ${{ secrets.WIN_DEVKIT_AC24 }} Build
     - name: Generate Project
-      run: cmake -B Build/AC24 -G "Visual Studio 16 2019" -A "x64" -T "v142" -DAC_API_DEVKIT_DIR="Build/API Development Kit 24.3009" .
+      run: cmake -B Build/AC24 -G "Visual Studio 16 2019" -A "x64" -T "v141" -DAC_API_DEVKIT_DIR="Build/API Development Kit 24.3009" .
     - name: Build Debug
       run: cmake --build Build/AC24 --config Debug
     - name: Build RelWithDebInfo
