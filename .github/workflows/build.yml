@@ -2,60 +2,35 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '*'
+    tags:
+      - '*'
 
 jobs:
-
-  build_ac24:
-    runs-on: [windows-2019]
+  build_win_ac26:
+    runs-on: [ windows-2019 ]
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
+    - name: Download Development Kit
+      run: python Tools/download_and_unzip.py ${{ secrets.WIN_DEVKIT_AC26 }} Build
+    - name: Generate Project
+      run: cmake -B Build/AC26 -G "Visual Studio 16 2019" -A "x64" -T "v142" -DAC_API_DEVKIT_DIR="Build/API Development Kit 26.3000" .
+    - name: Build Debug
+      run: cmake --build Build/AC26 --config Debug
+    - name: Build RelWithDebInfo
+      run: cmake --build Build/AC26 --config RelWithDebInfo
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
       with:
-        path: dotbim-archicad
-    - name: Checkout devkits
-      uses: actions/checkout@v3
+        name: Dotbim Add-On AC26 Win
+        path: Build/AC26/RelWithDebInfo/Dotbim_AC26_Win.apx
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: ncipollo/release-action@v1
       with:
-        repository: kovacsv/ArchicadDevKits
-        token: ${{ secrets.PAT }}
-        path: ArchicadDevKits
-    - name: Unzip devkit
-      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 24.3009.zip" -o"dotbim-archicad/Build/AC24"
-    - name: Build
-      run: python dotbim-archicad/Tools/build.py --acVersion "24" --devKitDir "Build/AC24/API Development Kit 24.3009" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
-
-  build_ac25:
-    runs-on: [windows-2019]
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        path: dotbim-archicad
-    - name: Checkout devkits
-      uses: actions/checkout@v3
-      with:
-        repository: kovacsv/ArchicadDevKits
-        token: ${{ secrets.PAT }}
-        path: ArchicadDevKits
-    - name: Unzip devkit
-      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 25.3002.zip" -o"dotbim-archicad/Build/AC25"
-    - name: Build
-      run: python dotbim-archicad/Tools/build.py --acVersion "25" --devKitDir "Build/AC25/API Development Kit 25.3002" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
-
-  build_ac26:
-    runs-on: [windows-2019]
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        path: dotbim-archicad
-    - name: Checkout devkits
-      uses: actions/checkout@v3
-      with:
-        repository: kovacsv/ArchicadDevKits
-        token: ${{ secrets.PAT }}
-        path: ArchicadDevKits
-    - name: Unzip devkit
-      run: 7z x -aos "ArchicadDevKits/Win/API Development Kit 26.3000.zip" -o"dotbim-archicad/Build/AC26"
-    - name: Build
-      run: python dotbim-archicad/Tools/build.py --acVersion "26" --devKitDir "Build/AC26/API Development Kit 26.3000" --developerId ${{ secrets.AC_MDID_DEV }} --localId ${{ secrets.AC_MDID_LOC }}
+        artifacts: Build/AC26/RelWithDebInfo/Dotbim_AC26_Win.apx
+        draft: true
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}

@@ -53,7 +53,14 @@ else ()
 endif ()
 add_definitions (-DACExtension)
 
-project (${AC_ADDON_NAME})
+if (WIN32)
+	set (OutputPostfix Win)
+else ()
+	set (OutputPostfix Mac)
+endif ()
+
+set (OutputName ${AC_ADDON_NAME}_AC${ARCHICAD_VERSION}_${OutputPostfix})
+project (${OutputName})
 
 set (AddOnSourcesFolder Sources/AddOn)
 set (AddOnResourcesFolder Sources/AddOnResources)
@@ -100,7 +107,7 @@ if (WIN32)
 		DEPENDS ${AddOnResourceFiles} ${AddOnImageFiles}
 		COMMENT "Compiling resources..."
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${ResourceObjectsDir}"
-		COMMAND python "${AddOnResourcesFolderAbsolute}/Tools/CompileResources.py" "${AC_ADDON_LANGUAGE}" "${AC_API_DEVKIT_DIR}" "${AddOnSourcesFolderAbsolute}" "${AddOnResourcesFolderAbsolute}" "${ResourceObjectsDir}" "${ResourceObjectsDir}/${AC_ADDON_NAME}.res"
+		COMMAND python "${AddOnResourcesFolderAbsolute}/Tools/CompileResources.py" "${AC_ADDON_LANGUAGE}" "${AC_API_DEVKIT_DIR}" "${AddOnSourcesFolderAbsolute}" "${AddOnResourcesFolderAbsolute}" "${ResourceObjectsDir}" "${ResourceObjectsDir}/${OutputName}.res"
 		COMMAND ${CMAKE_COMMAND} -E touch "${ResourceObjectsDir}/AddOnResources.stamp"
 	)
 else ()
@@ -109,8 +116,8 @@ else ()
 		DEPENDS ${AddOnResourceFiles} ${AddOnImageFiles}
 		COMMENT "Compiling resources..."
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${ResourceObjectsDir}"
-		COMMAND python "${AddOnResourcesFolderAbsolute}/Tools/CompileResources.py" "${AC_ADDON_LANGUAGE}" "${AC_API_DEVKIT_DIR}" "${AddOnSourcesFolderAbsolute}" "${AddOnResourcesFolderAbsolute}" "${ResourceObjectsDir}" "${CMAKE_BINARY_DIR}/$<CONFIG>/${AC_ADDON_NAME}.bundle/Contents/Resources"
-		COMMAND ${CMAKE_COMMAND} -E copy "${AC_API_DEVKIT_DIR}/Support/Inc/PkgInfo" "${CMAKE_BINARY_DIR}/$<CONFIG>/${AC_ADDON_NAME}.bundle/Contents/PkgInfo"
+		COMMAND python "${AddOnResourcesFolderAbsolute}/Tools/CompileResources.py" "${AC_ADDON_LANGUAGE}" "${AC_API_DEVKIT_DIR}" "${AddOnSourcesFolderAbsolute}" "${AddOnResourcesFolderAbsolute}" "${ResourceObjectsDir}" "${CMAKE_BINARY_DIR}/$<CONFIG>/${OutputName}.bundle/Contents/Resources"
+		COMMAND ${CMAKE_COMMAND} -E copy "${AC_API_DEVKIT_DIR}/Support/Inc/PkgInfo" "${CMAKE_BINARY_DIR}/$<CONFIG>/${OutputName}.bundle/Contents/PkgInfo"
 		COMMAND ${CMAKE_COMMAND} -E touch "${ResourceObjectsDir}/AddOnResources.stamp"
 	)
 endif ()
@@ -137,7 +144,7 @@ else ()
 	add_library (AddOn MODULE ${AddOnFiles})
 endif ()
 
-set_target_properties (AddOn PROPERTIES OUTPUT_NAME ${AC_ADDON_NAME})
+set_target_properties (AddOn PROPERTIES OUTPUT_NAME ${OutputName})
 if (WIN32)
 	set_target_properties (AddOn PROPERTIES SUFFIX ".apx")
 else ()
@@ -147,7 +154,7 @@ else ()
 endif ()
 
 if (WIN32)
-	target_link_options (AddOn PUBLIC "${ResourceObjectsDir}/${AC_ADDON_NAME}.res")
+	target_link_options (AddOn PUBLIC "${ResourceObjectsDir}/${OutputName}.res")
 	target_link_options (AddOn PUBLIC /export:GetExportedFuncAddrs,@1 /export:SetImportedFuncAddrs,@2)
 endif ()
 
