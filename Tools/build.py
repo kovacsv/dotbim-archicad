@@ -33,18 +33,21 @@ if platform.system () == 'Windows':
     else:
         if args.acVersion == '24':
             generatorParams = [
-                '-G', 'Visual Studio 15 2017',
-                '-A', 'x64'
+                '-G', 'Visual Studio 16 2019',
+                '-A', 'x64',
+                '-T', 'v140'
             ]
         elif args.acVersion == '25':
             generatorParams = [
                 '-G', 'Visual Studio 16 2019',
-                '-A', 'x64'
+                '-A', 'x64',
+                '-T', 'v141'
             ]
         elif args.acVersion == '26':
             generatorParams = [
                 '-G', 'Visual Studio 16 2019',
-                '-A', 'x64'
+                '-A', 'x64',
+                '-T', 'v142'
             ]
 elif platform.system () == 'Darwin':
     if args.projGenerator != None:
