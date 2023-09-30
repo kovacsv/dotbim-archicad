@@ -40,12 +40,12 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Dotbim Add-On AC${{ matrix.params.acVersion }} Win
-        path: Build/RelWithDebInfo/Dotbim_AC${{ matrix.params.acVersion }}_Win.apx
+        path: Build/RelWithDebInfo/DotbimAddOn.apx
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: ncipollo/release-action@v1
       with:
-        artifacts: Build/RelWithDebInfo/Dotbim_AC${{ matrix.params.acVersion }}_Win.apx
+        artifacts: Build/RelWithDebInfo/DotbimAddOn.apx
         draft: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
