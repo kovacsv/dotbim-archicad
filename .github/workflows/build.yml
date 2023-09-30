@@ -31,7 +31,7 @@ jobs:
     - name: Download Development Kit
       run: python Tools/download_and_unzip.py ${{ secrets[matrix.params.devKitUrl] }} Build
     - name: Generate Project
-      run: cmake -B Build -G "Visual Studio 16 2019" -A "x64" -T "${{ matrix.params.platformToolset }}" -DAC_API_DEVKIT_DIR="Build/${{ matrix.params.devKitDir }}" .
+      run: cmake -B Build -G "Visual Studio 16 2019" -A "x64" -T "${{ matrix.params.platformToolset }}" -DAC_API_DEVKIT_DIR="Build/${{ matrix.params.devKitDir }}/Support" .
     - name: Build Debug
       run: cmake --build Build --config Debug
     - name: Build RelWithDebInfo
