@@ -22,7 +22,11 @@ jobs:
             platformToolset: v142
           - acVersion: 26
             devKitUrl: WIN_DEVKIT_AC26
-            devKitDir: API Development Kit 26.3000  
+            devKitDir: API Development Kit 26.3000
+            platformToolset: v142
+          - acVersion: 27
+            devKitUrl: WIN_DEVKIT_AC27
+            devKitDir: API Development Kit 27.3001
             platformToolset: v142
     runs-on: [ windows-2019 ]
     steps:
