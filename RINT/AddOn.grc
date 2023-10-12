@@ -2,7 +2,7 @@
 
 'STR#' ID_ADDON_INFO "Add-on Name and Description" {
 /* [  1] */		"Dotbim Add-On"
-/* [  2] */		"Add-On to import and export Dotbim (.bim) files.\n\nVersion 0.0.5"
+/* [  2] */		"Add-On to import and export Dotbim (.bim) files.\n\nVersion 0.0.6"
 }
 
 'STR#' ID_ADDON_MENU "Strings for the Menu" {
