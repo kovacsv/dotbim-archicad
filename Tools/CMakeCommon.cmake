@@ -101,7 +101,7 @@ function (GenerateAddOnProject acVersion devKitDir addOnName addOnFolder addOnLa
 
     find_package (Python COMPONENTS Interpreter)
 
-    set (AddOnSourcesFolder ${addOnFolder}/Src)
+    set (AddOnSourcesFolder ${addOnFolder}/Source)
     set (AddOnResourcesFolder ${addOnFolder})
 
     set (ResourceObjectsDir ${CMAKE_BINARY_DIR}/ResourceObjects)
