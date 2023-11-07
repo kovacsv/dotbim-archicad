@@ -1,16 +1,17 @@
 #include "DotbimImporter.hpp"
 #include "MatrixUtils.hpp"
 
-#include "ACAPinc.h"
 #include "ApiUtils.hpp"
 
-#include "Color.hpp"
-#include "File.hpp"
-#include "TRANMAT.h"
-#include "StringConversion.hpp"
+#include <ACAPinc.h>
 
-#include "rapidjson.h"
-#include "document.h"
+#include <Color.hpp>
+#include <File.hpp>
+#include <TRANMAT.h>
+#include <StringConversion.hpp>
+
+#include <rapidjson.h>
+#include <document.h>
 
 // TODO: handle teamwork rights
 static API_AttributeIndex CreateMaterial (const Gfx::Color& color, const GS::UniString& nameTemplate)

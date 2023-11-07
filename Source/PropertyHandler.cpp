@@ -1,8 +1,9 @@
 #include "PropertyHandler.hpp"
 #include "ResourceIds.hpp"
 
-#include "ACAPinc.h"
 #include "ApiUtils.hpp"
+
+#include <ACAPinc.h>
 
 static const GSResID AddOnPropStrsID = ID_ADDON_PROP_STRS;
 static const Int32 ElementInfoID = 1;

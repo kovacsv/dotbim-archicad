@@ -1,12 +1,12 @@
 #include "ApiUtils.hpp"
 
 #if defined(ServerMainVers_2600)
-#include "IAttributeReader.hpp"
+#include <IAttributeReader.hpp>
 #else
-#include "AttributeReader.hpp"
+#include <AttributeReader.hpp>
 #endif
 
-#include "exp.h"
+#include <exp.h>
 
 void SetAPIElementType (API_Element& element, API_ElemTypeID elemTypeId)
 {

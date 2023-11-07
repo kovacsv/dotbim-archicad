@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ACAPinc.h"
+#include <ACAPinc.h>
 
-#include "Sight.hpp"
-#include "Model.hpp"
-#include "Model3D/Model3D.hpp"
+#include <Sight.hpp>
+#include <Model.hpp>
+#include <Model3D/Model3D.hpp>
 
 void SetAPIElementType (API_Element& element, API_ElemTypeID elemTypeId);
 GS::UniString GetElemTypeName (const API_Elem_Head& elemHead);

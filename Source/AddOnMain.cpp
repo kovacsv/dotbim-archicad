@@ -1,13 +1,15 @@
+#include <ACAPinc.h>
+
 #include "APIEnvir.h"
-#include "ACAPinc.h"
 
 #include "ResourceIds.hpp"
-#include "DGModule.hpp"
 
 #include "DotbimImporter.hpp"
 #include "DotbimExporter.hpp"
 #include "PropertyHandler.hpp"
 #include "ApiUtils.hpp"
+
+#include <DGModule.hpp>
 
 static const GSResID AddOnInfoID = ID_ADDON_INFO;
 static const Int32 AddOnNameID = 1;

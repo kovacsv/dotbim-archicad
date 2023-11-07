@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GSGuid.hpp"
+#include <GSGuid.hpp>
 
 #include <string>
 #include <functional>

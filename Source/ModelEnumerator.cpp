@@ -1,14 +1,14 @@
 #include "ModelEnumerator.hpp"
 
-#include "ACAPinc.h"
-#include "Algorithms.hpp"
-#include "GSProcessControl.hpp"
+#include <ACAPinc.h>
+#include <Algorithms.hpp>
+#include <GSProcessControl.hpp>
 
-#include "ModelMeshBody.hpp"
-#include "Polygon.hpp"
-#include "ConvexPolygon.hpp"
-#include "ModelMaterial.hpp"
-#include "ApiUtils.hpp"
+#include <ModelMeshBody.hpp>
+#include <Polygon.hpp>
+#include <ConvexPolygon.hpp>
+#include <ModelMaterial.hpp>
+#include <ApiUtils.hpp>
 
 static unsigned char ConvertApiColorComponent (double component)
 {
