@@ -1,13 +1,8 @@
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.17)
 
 include (Tools/CMakeCommon.cmake)
 
 set (API_DEVKIT_DIR $ENV{AC_API_DEVKIT_DIR})
-
-if (GITHUB_BUILD)
-    include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
-    set (API_DEVKIT_DIR ${CONAN_ARCHICAD-APIDEVKIT_ROOT}/bin)
-endif ()
 
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -21,6 +16,7 @@ project (${AC_ADDON_NAME})
 DetectACVersion (${AC_API_DEVKIT_DIR} ACVersion)
 message (STATUS "Archicad Version: ${ACVersion}")
 
-set (AddOnFolder .)
+set (AddOnSourcesFolder Source)
+set (AddOnResourcesFolder .)
 SetGlobalCompilerDefinitions ()
-GenerateAddOnProject (${ACVersion} ${AC_API_DEVKIT_DIR} ${AC_ADDON_NAME} ${AddOnFolder} ${AC_ADDON_LANGUAGE})
+GenerateAddOnProject (${ACVersion} ${AC_API_DEVKIT_DIR} ${AC_ADDON_NAME} ${AddOnSourcesFolder} ${AddOnResourcesFolder} ${AC_ADDON_LANGUAGE})
