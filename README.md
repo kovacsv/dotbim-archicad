@@ -7,10 +7,14 @@ Archicad Add-On to import and export [Dotbim (.bim)](https://dotbim.net) files.
 ## How to use?
 
 You can download the latest version here:
-- [Archicad 27 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC27_Win.apx)
-- [Archicad 26 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC26_Win.apx)
-- [Archicad 25 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC25_Win.apx)
-- [Archicad 24 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC24_Win.apx)
+- [Archicad 27 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-27_Release_WIN.zip)
+- [Archicad 26 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-26_Release_WIN.zip)
+- [Archicad 25 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-25_Release_WIN.zip)
+- [Archicad 27 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-27_Release_MAC.zip)
+- [Archicad 26 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-26_Release_MAC.zip)
+- [Archicad 25 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-25_Release_MAC.zip)
+
+https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC25_Win.apx
 
 ### Install
 
