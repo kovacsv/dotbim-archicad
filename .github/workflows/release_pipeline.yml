@@ -3,7 +3,7 @@ name: Release Add-On Pipeline
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
 
 defaults:
   run:
