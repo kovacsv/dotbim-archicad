@@ -1,4 +1,4 @@
-name: Release Add-On Pipeline
+name: Build
 
 on:
   workflow_dispatch:
