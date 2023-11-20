@@ -14,8 +14,6 @@ You can download the latest version here:
 - [Archicad 26 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-26_Release_MAC.zip)
 - [Archicad 25 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-25_Release_MAC.zip)
 
-https://github.com/kovacsv/dotbim-archicad/releases/latest/download/Dotbim_AC25_Win.apx
-
 ### Install
 
 You have two options to install the Add-On
