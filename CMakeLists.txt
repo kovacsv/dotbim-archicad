@@ -11,12 +11,15 @@ set (AC_API_DEVKIT_DIR ${API_DEVKIT_DIR} CACHE PATH "API DevKit directory.")
 set (AC_ADDON_NAME "DotbimAddOn" CACHE STRING "Add-On name.")
 set (AC_ADDON_LANGUAGE "INT" CACHE STRING "Add-On language code.")
 
-project (${AC_ADDON_NAME})
+if (NOT DEFINED AC_VERSION)
+    message (FATAL_ERROR "AC_VERSION is not set!")
+endif ()
 
-DetectACVersion (${AC_API_DEVKIT_DIR} ACVersion)
-message (STATUS "Archicad Version: ${ACVersion}")
+message (STATUS "Archicad Version: ${AC_VERSION}")
+SetGlobalCompilerDefinitions (${AC_VERSION})
+
+project (${AC_ADDON_NAME})
 
 set (AddOnSourcesFolder Source)
 set (AddOnResourcesFolder .)
-SetGlobalCompilerDefinitions ()
-GenerateAddOnProject (${ACVersion} ${AC_API_DEVKIT_DIR} ${AC_ADDON_NAME} ${AddOnSourcesFolder} ${AddOnResourcesFolder} ${AC_ADDON_LANGUAGE})
+GenerateAddOnProject (${AC_VERSION} ${AC_API_DEVKIT_DIR} ${AC_ADDON_NAME} ${AddOnSourcesFolder} ${AddOnResourcesFolder} ${AC_ADDON_LANGUAGE})
