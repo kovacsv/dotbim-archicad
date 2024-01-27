@@ -159,7 +159,7 @@ static GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
     return NoError;
 }
 
-API_AddonType __ACDLL_CALL CheckEnvironment (API_EnvirParams* envir)
+API_AddonType CheckEnvironment (API_EnvirParams* envir)
 {
     RSGetIndString (&envir->addOnInfo.name, AddOnInfoID, AddOnNameID, ACAPI_GetOwnResModule ());
     RSGetIndString (&envir->addOnInfo.description, AddOnInfoID, AddOnDescriptionID, ACAPI_GetOwnResModule ());
@@ -167,7 +167,7 @@ API_AddonType __ACDLL_CALL CheckEnvironment (API_EnvirParams* envir)
     return APIAddon_Normal;
 }
 
-GSErrCode __ACDLL_CALL RegisterInterface (void)
+GSErrCode RegisterInterface (void)
 {
     GSErrCode err = NoError;
 
@@ -193,7 +193,7 @@ GSErrCode __ACDLL_CALL RegisterInterface (void)
     return NoError;
 }
 
-GSErrCode __ACENV_CALL Initialize (void)
+GSErrCode Initialize (void)
 {
     GSErrCode err = NoError;
 
@@ -210,7 +210,7 @@ GSErrCode __ACENV_CALL Initialize (void)
     return NoError;
 }
 
-GSErrCode __ACENV_CALL FreeData (void)
+GSErrCode FreeData (void)
 {
     return NoError;
 }

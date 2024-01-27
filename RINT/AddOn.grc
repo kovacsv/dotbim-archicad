@@ -1,6 +1,6 @@
 #include "ResourceIds.hpp"
 
-'STR#' ID_ADDON_INFO "Add-on Name and Description" {
+'STR#' ID_ADDON_INFO "Add-On Name and Description" {
 /* [  1] */		"Dotbim Add-On"
 /* [  2] */		"Add-On to import and export Dotbim (.bim) files.\n\nVersion 0.0.7"
 }

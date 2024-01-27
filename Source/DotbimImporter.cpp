@@ -13,7 +13,8 @@
 #include <rapidjson.h>
 #include <document.h>
 
-// TODO: handle teamwork rights
+#include <vector>
+
 static API_AttributeIndex CreateMaterial (const Gfx::Color& color, const GS::UniString& nameTemplate)
 {
     API_Attribute material = {};
@@ -77,7 +78,7 @@ static GSErrCode ImportDotbimElement (
         return err;
     }
 
-    GS::Array<UInt32> vertexIndices;
+    std::vector<UInt32> vertexIndices;
     const rapidjson::Value& coordinates = mesh["coordinates"];
     for (rapidjson::SizeType i = 0; i < coordinates.Size (); i += 3) {
         API_Coord3D position = {
@@ -87,7 +88,7 @@ static GSErrCode ImportDotbimElement (
         };
         UInt32 vertexIndex = 0;
         ACAPI_Body_AddVertex (bodyData, position, vertexIndex);
-        vertexIndices.Push (vertexIndex);
+        vertexIndices.push_back (vertexIndex);
     }
 
     bool hasFaceColors = element.HasMember ("face_colors");
@@ -228,8 +229,27 @@ static GSErrCode ImportDotbimContent (const char* fileContent, const GS::UniStri
     return NoError;
 }
 
+static bool HasRightToCreateMaterials ()
+{
+    API_TWAccessRights accessRight = APIMaterialsCreate;
+    bool hasRight = false;
+#ifdef ServerMainVers_2700
+    GSErrCode err = ACAPI_Teamwork_GetTWAccessRight (accessRight, &hasRight);
+#else
+    GSErrCode err = ACAPI_Environment (APIEnv_GetTWAccessRightID, &accessRight, &hasRight);
+#endif
+    if (err != NoError) {
+        return false;
+    }
+    return hasRight;
+}
+
 GSErrCode ImportDotbim (const IO::Location& fileLocation, const GS::UniString& materialNameTemplate)
 {
+    if (!HasRightToCreateMaterials ()) {
+        return false;
+    }
+
     IO::File file (fileLocation);
     if (file.GetStatus () != NoError) {
         return Error;

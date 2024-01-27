@@ -5,7 +5,7 @@
 #include <ModelElement.hpp>
 #include <Transformation.hpp>
 
-using GuidAndType = GS::Pair<GS::Guid, ModelerAPI::Element::Type>;
+using GuidAndType = std::pair<GS::Guid, ModelerAPI::Element::Type>;
 
 class Color
 {
