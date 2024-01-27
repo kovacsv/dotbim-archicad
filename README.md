@@ -26,7 +26,7 @@ You can open Add-On Manager with the `Options > Add-On Manager` command. Open th
 
 Copy the downloaded apx file to the Add-Ons folder of your Archicad installation. Make sure to restart Archicad after the copy. On Windows the Add-Ons folder location is something like this:
 ```
-C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons`
+C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons
 ```
 
 ### Use
@@ -50,13 +50,12 @@ You should install some prerequisites to build the Add-On:
   - Archicad 24: Visual Studio 2017
   - Archicad 25: Visual Studio 2019
   - Archicad 26: Visual Studio 2019
-- [Archicad API Development Kit](https://archicadapi.graphisoft.com) for the target version
 - [CMake](https://cmake.org) for generating the project file (3.16+)
 - [Python](https://www.python.org) for resource compilation (2.7+ or 3.8+)
 
 ### Generate the project and build
 
-See the `Tools` folder for some preconfigured build scripts for each version. Running one of these scripts also generates the Visual Studio project, so after the first run you can continue to work in Visual Studio.
-- Archicad 24: `Tools/build_ac24.bat`
-- Archicad 25: `Tools/build_ac25.bat`
-- Archicad 26: `Tools/build_ac26.bat`
+Run this command from the root of the repository:
+```
+python Tools\BuildAddOn.py --configFile config.json --acVersion 25 26 27
+```
