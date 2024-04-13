@@ -101,9 +101,9 @@ static GSErrCode ExportDotbimFromMenu ()
 
     DG::FileDialog saveFileDialog (DG::FileDialog::Type::Save);
     GS::UniString fileTypeString = RSGetIndString (AddOnStrsID, FormatNameID, ACAPI_GetOwnResModule ());
-    FTM::FileTypeManager fileTypeManager (fileTypeString.ToCStr ());
-    FTM::FileType fileType (nullptr, "bim", 0, 0, 0);
-    FTM::TypeID fileTypeId = FTM::FileTypeManager::SearchForType (fileType);
+    FTM::FileTypeManager fileTypeManager ("Dotbim");
+    FTM::FileType fileType (fileTypeString.ToCStr (CC_UTF8), "bim", 0, 0, 0);
+    FTM::TypeID fileTypeId = fileTypeManager.AddType (fileType);
     saveFileDialog.AddFilter (fileTypeId);
 
     IO::Location fileLoc = saveFileDialog.GetSelectedFolder ();

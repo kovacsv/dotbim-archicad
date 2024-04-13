@@ -36,19 +36,19 @@ class ModelEnumerator
 public:
     ModelEnumerator (const ModelerAPI::Model& model);
 
-    USize				GetElementCount () const;
+    USize GetElementCount () const;
     const GS::Guid& GetElementGuid (UIndex index) const;
-    bool				GetElementBaseElementId (UIndex index, ModelerAPI::BaseElemId& baseElemId) const;
-    bool				GetElementTransformation (UIndex index, ModelerAPI::Transformation& transformation) const;
-    void				EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const;
+    bool GetElementBaseElementId (UIndex index, ModelerAPI::BaseElemId& baseElemId) const;
+    bool GetElementTransformation (UIndex index, ModelerAPI::Transformation& transformation) const;
+    void EnumerateElementGeometry (UIndex index, TriangleEnumerator& enumerator) const;
 
 private:
-    void	BuildHierarchy ();
-    bool	IsHierarchicalMainElement (const GS::Guid& elementGuid) const;
-    Int32	EnumerateElement (const ModelerAPI::Element& element, ModelerAPI::CoordinateSystem coordSystem, Int32 vertexOffset, TriangleEnumerator& enumerator) const;
+    void BuildHierarchy ();
+    bool IsHierarchicalMainElement (const GS::Guid& elementGuid) const;
+    Int32 EnumerateElement (const ModelerAPI::Element& element, ModelerAPI::CoordinateSystem coordSystem, Int32 vertexOffset, TriangleEnumerator& enumerator) const;
 
     const ModelerAPI::Model& model;
-    GS::Array<GuidAndType>							topLevelElements;
-    GS::HashTable<GS::Guid, ModelerAPI::Element>	guidToElement;
-    GS::HashTable<GS::Guid, GS::Array<GS::Guid>>	elemHierarchy;
+    GS::Array<GuidAndType> topLevelElements;
+    GS::HashTable<GS::Guid, ModelerAPI::Element> guidToElement;
+    GS::HashTable<GS::Guid, GS::Array<GS::Guid>> elemHierarchy;
 };

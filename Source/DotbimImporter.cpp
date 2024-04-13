@@ -188,7 +188,7 @@ static GSErrCode ImportDotbimElement (
     morphElement.morph.tranmat.tmx[10] = matrix.Get (2, 2);
     morphElement.morph.tranmat.tmx[11] = matrix.Get (2, 3);
 
-    // TODO: seems like it doesn't have any effect
+    // seems like it doesn't have any effect
     morphElement.morph.edgeType = APIMorphEdgeType_HardHiddenEdge;
     err = ACAPI_Element_Create (&morphElement, &bodyMemo);
     if (err != NoError) {

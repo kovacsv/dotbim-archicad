@@ -19,11 +19,13 @@
 #include <stringbuffer.h>
 
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 #include <algorithm>
 
 namespace std
 {
+
 template <>
 struct hash<Color>
 {
@@ -32,6 +34,16 @@ struct hash<Color>
         return color.r + 12289 * color.g + 24593 * color.b + 49157 * color.a;
     }
 };
+
+template <>
+struct hash<ModelerAPI::BaseElemId>
+{
+    size_t operator() (const ModelerAPI::BaseElemId& baseElemId) const noexcept
+    {
+        return baseElemId.GenerateHashValue ();
+    }
+};
+
 }
 
 static const Color DefaultElemColor (200, 200, 200, 255);
@@ -111,7 +123,7 @@ public:
     std::unordered_set<Color> usedColors;
 };
 
-using BaseElemIdToMeshIndex = GS::HashTable<ModelerAPI::BaseElemId, rapidjson::SizeType>;
+using BaseElemIdToMeshIndex = std::unordered_map<ModelerAPI::BaseElemId, rapidjson::SizeType>;
 
 static void ExportElement (
     const ModelEnumerator& enumerator,
@@ -137,11 +149,12 @@ static void ExportElement (
     rapidjson::SizeType meshId = meshesArray.Size ();
     ModelerAPI::BaseElemId baseElemId;
     if (enumerator.GetElementBaseElementId (elementIndex, baseElemId)) {
-        if (baseElemIdToMeshIndex.ContainsKey (baseElemId)) {
+        auto found = baseElemIdToMeshIndex.find (baseElemId);
+        if (found != baseElemIdToMeshIndex.end ()) {
             needToAddNewMesh = false;
-            meshId = baseElemIdToMeshIndex.Get (baseElemId);
+            meshId = found->second;
         } else {
-            baseElemIdToMeshIndex.Add (baseElemId, meshId);
+            baseElemIdToMeshIndex.insert ({ baseElemId, meshId });
         }
     }
 
