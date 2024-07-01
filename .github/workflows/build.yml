@@ -34,12 +34,3 @@ jobs:
       - name: Run build script
         run: |
           python Tools/BuildAddOn.py --configFile config.json --acVersion ${{ matrix.ac-version }} --package
-
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: ncipollo/release-action@v1
-        with:
-            artifacts: Build/Package/*.zip
-            draft: true
-            allowUpdates: true
-            token: ${{ secrets.GITHUB_TOKEN }}
