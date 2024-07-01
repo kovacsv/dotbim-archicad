@@ -18,7 +18,6 @@
 static API_AttributeIndex CreateMaterial (const Gfx::Color& color, const GS::UniString& nameTemplate)
 {
     API_Attribute material = {};
-    BNZeroMemory (&material, sizeof (API_Attribute));
 
     material.header.typeID = API_MaterialID;
     GS::UniString colorString = "(" +
@@ -151,8 +150,7 @@ static GSErrCode ImportDotbimElement (
     ACAPI_Body_Finish (bodyData, &bodyMemo.morphBody, &bodyMemo.morphMaterialMapTable);
     ACAPI_Body_Dispose (&bodyData);
 
-    API_Element morphElement;
-    BNZeroMemory (&morphElement, sizeof (API_Element));
+    API_Element morphElement = {};
     SetAPIElementType (morphElement, API_MorphID);
     err = ACAPI_Element_GetDefaults (&morphElement, nullptr);
     if (err != NoError) {
@@ -240,7 +238,7 @@ static bool HasRightToCreateMaterials ()
 #endif
     if (err != NoError) {
         return false;
-    }
+}
     return hasRight;
 }
 
