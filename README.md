@@ -6,28 +6,9 @@ Archicad Add-On to import and export [Dotbim (.bim)](https://dotbim.net) files.
 
 ## How to use?
 
-You can download the latest version here:
-- [Archicad 27 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-27_Release_WIN.zip)
-- [Archicad 26 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-26_Release_WIN.zip)
-- [Archicad 25 (Windows)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-25_Release_WIN.zip)
-- [Archicad 27 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-27_Release_MAC.zip)
-- [Archicad 26 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-26_Release_MAC.zip)
-- [Archicad 25 (macOS)](https://github.com/kovacsv/dotbim-archicad/releases/latest/download/DotbimAddOn-25_Release_MAC.zip)
-
 ### Install
 
-You have two options to install the Add-On
-
-#### First option: Load in Add-On Manager
-
-You can open Add-On Manager with the `Options > Add-On Manager` command. Open the "Edit List of Available Add-Ons" panel, click on the "Add..." button, and select the downloaded apx file.
-
-#### Second option: Copy to the Add-Ons folder
-
-Copy the downloaded apx file to the Add-Ons folder of your Archicad installation. Make sure to restart Archicad after the copy. On Windows the Add-Ons folder location is something like this:
-```
-C:\Program Files\GRAPHISOFT\ARCHICAD\Add-Ons
-```
+You can download the Add-On from the [Bimdots](https://bimdots.com/product/dotbim-in-out) store. Please read the [installation guide](https://bimdots.com/help-center/add-on-installation-guide) for more instructions.
 
 ### Use
 
