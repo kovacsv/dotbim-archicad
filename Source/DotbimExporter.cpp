@@ -253,3 +253,47 @@ std::string ExportDotbim (const ModelerAPI::Model& model)
 
     return buffer.GetString ();
 }
+
+GSErrCode ExportDotbimFile (const ModelerAPI::Model& model, const IO::Location& location)
+{
+    IO::File output (location, IO::File::OnNotFound::Create);
+    if (output.GetStatus () != NoError) {
+        return Error;
+    }
+
+    output.Open (IO::File::OpenMode::WriteEmptyMode);
+    if (output.GetStatus () != NoError) {
+        return Error;
+    }
+
+    std::string dotbimContent = ExportDotbim (model);
+    output.WriteBin (dotbimContent.c_str (), (USize) dotbimContent.length ());
+
+    output.Close ();
+    return NoError;
+}
+
+GSErrCode ExportDotbimFileFrom3DWindow (const IO::Location& location)
+{
+    API_WindowInfo windowInfo = {};
+    if (ACAPI_Window_GetCurrentWindow (&windowInfo) != NoError) {
+        return Error;
+    }
+    if (windowInfo.typeID != APIWind_3DModelID) {
+        return Error;
+    }
+
+    ModelerAPI::Model model;
+    void* currentSight = nullptr;
+    if (ACAPI_Sight_GetCurrentWindowSight (&currentSight) != NoError) {
+        return Error;
+    }
+
+    Modeler::SightPtr sightPtr ((Modeler::Sight*) currentSight);
+    Modeler::ConstModel3DPtr modelPtr (sightPtr->GetMainModelPtr ());
+    if (GetAPIModel (modelPtr, &model) != NoError) {
+        return Error;
+    }
+
+    return ExportDotbimFile (model, location);
+}

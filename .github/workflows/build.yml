@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os-type: [ windows-2019, macos-12 ]
-        ac-version: [ 25, 26, 27 ]
+        ac-version: [ 26, 27, 28 ]
 
     steps:
       - uses: actions/checkout@v3

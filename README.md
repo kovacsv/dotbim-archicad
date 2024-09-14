@@ -27,10 +27,7 @@ The build environment is set up for Windows development, but the code should com
 ### Prerequisites
 
 You should install some prerequisites to build the Add-On:
-- [Visual Studio](https://visualstudio.microsoft.com/downloads):
-  - Archicad 24: Visual Studio 2017
-  - Archicad 25: Visual Studio 2019
-  - Archicad 26: Visual Studio 2019
+- [Visual Studio](https://visualstudio.microsoft.com/downloads) (2019+)
 - [CMake](https://cmake.org) for generating the project file (3.16+)
 - [Python](https://www.python.org) for resource compilation (2.7+ or 3.8+)
 

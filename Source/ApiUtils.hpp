@@ -22,6 +22,8 @@ GSErrCode GetAPIModel (Modeler::ConstModel3DPtr modelPtr, ModelerAPI::Model* mod
 #define ACAPI_AddOnIntegration_RegisterFileType ACAPI_Register_FileType
 #define ACAPI_AddOnIntegration_InstallFileTypeHandler3D ACAPI_Install_FileTypeHandler3D
 
+#define ACAPI_AddOnAddOnCommunication_InstallAddOnCommandHandler ACAPI_Install_AddOnCommandHandler
+
 #define ACAPI_Category_GetCategoryValue ACAPI_Element_GetCategoryValue
 #define ACAPI_Category_GetCategoryValueDefault ACAPI_Element_GetCategoryValueDefault
 

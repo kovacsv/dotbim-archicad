@@ -5,12 +5,6 @@
 
 #include <ACAPinc.h>
 
-static const GSResID AddOnPropStrsID = ID_ADDON_PROP_STRS;
-static const Int32 ElementInfoID = 1;
-static const Int32 ProjectNameID = 2;
-static const Int32 GeneratedByID = 3;
-static const Int32 UntitledID = 4;
-
 static void ProcessProperty (const GS::UniString& name, const GS::UniString& val, const PropertyProcessor& processor)
 {
     std::string propertyName = name.ToCStr ().Get ();
@@ -20,7 +14,7 @@ static void ProcessProperty (const GS::UniString& name, const GS::UniString& val
 
 GS::UniString GetProjectName ()
 {
-    GS::UniString projectName = RSGetIndString (AddOnPropStrsID, UntitledID, ACAPI_GetOwnResModule ());
+    GS::UniString projectName = RSGetIndString (ID_ADDON_PROP_STRS, ID_ADDON_PROP_STR_PROJECT_NAME, ACAPI_GetOwnResModule ());
 
     API_ProjectInfo projectInfo = {};
     GSErrCode err = ACAPI_ProjectOperation_Project (&projectInfo);
@@ -33,10 +27,10 @@ GS::UniString GetProjectName ()
 
 void EnumerateProjectProperties (const PropertyProcessor& processor)
 {
-    GS::UniString projectNameStr = RSGetIndString (AddOnPropStrsID, ProjectNameID, ACAPI_GetOwnResModule ());
+    GS::UniString projectNameStr = RSGetIndString (ID_ADDON_PROP_STRS, ID_ADDON_PROP_STR_PROJECT_NAME, ACAPI_GetOwnResModule ());
     ProcessProperty (projectNameStr, GetProjectName (), processor);
 
-    GS::UniString generatedByStr = RSGetIndString (AddOnPropStrsID, GeneratedByID, ACAPI_GetOwnResModule ());
+    GS::UniString generatedByStr = RSGetIndString (ID_ADDON_PROP_STRS, ID_ADDON_PROP_STR_GENERATED_BY, ACAPI_GetOwnResModule ());
     ProcessProperty (generatedByStr, "https://github.com/kovacsv/dotbim-archicad", processor);
 }
 
@@ -49,7 +43,7 @@ void EnumerateElemProperties (const GS::Guid& elemGuid, const PropertyProcessor&
     API_ElementMemo	elementMemo;
     err = ACAPI_Element_GetMemo (apiElemGuid, &elementMemo, APIMemoMask_ElemInfoString);
     if (err == NoError && elementMemo.elemInfoString != nullptr) {
-        GS::UniString elementIdStr = RSGetIndString (AddOnPropStrsID, ElementInfoID, ACAPI_GetOwnResModule ());
+        GS::UniString elementIdStr = RSGetIndString (ID_ADDON_PROP_STRS, ID_ADDON_PROP_STR_ELEMENT_ID, ACAPI_GetOwnResModule ());
         ProcessProperty (elementIdStr, *elementMemo.elemInfoString, processor);
         ACAPI_DisposeElemMemoHdls (&elementMemo);
     }
